@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">作息表</string>
+    <string name="action_edit">编辑</string>
+    <string name="action_delete">删除</string>
+    <string name="action_cancel">取消</string>
+    <!-- 每日作息页 -->
+    <string name="title_activity_work_and_rest">每日作息</string>
+
+
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="main_tablelayout_array">
+        <item>每日作息</item>
+        <item>周计划</item>
+        <item>月计划</item>
+        <item>重要日期</item>
+    </string-array>
+</resources>
