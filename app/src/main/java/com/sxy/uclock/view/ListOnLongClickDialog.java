@@ -22,11 +22,13 @@ public class ListOnLongClickDialog extends Dialog implements View.OnClickListene
     private DialogListOnLongClickBinding mBinding;
     private Context mContext;
     private OnDialogButtonClick mOnDialogButtonClick;
+    private int mPosition;
 
-    public ListOnLongClickDialog(Context context, int themeResId, OnDialogButtonClick onDialogButtonClick) {
+    public ListOnLongClickDialog(Context context, int themeResId, OnDialogButtonClick onDialogButtonClick,int position) {
         super(context, themeResId);
         mContext = context;
         mOnDialogButtonClick = onDialogButtonClick;
+        mPosition=position;
     }
 
     @Override
@@ -51,16 +53,16 @@ public class ListOnLongClickDialog extends Dialog implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_long_click_dialog_delete:
-                mOnDialogButtonClick.OnButtonClick(DEL_BUTTON);
+                mOnDialogButtonClick.OnButtonClick(DEL_BUTTON,mPosition);
                 break;
             case R.id.btn_long_click_dialog_cancel:
-                mOnDialogButtonClick.OnButtonClick(CANCEL_BUTTON);
+                mOnDialogButtonClick.OnButtonClick(CANCEL_BUTTON,mPosition);
                 break;
         }
         this.dismiss();
     }
 
     public interface OnDialogButtonClick {
-        void OnButtonClick(int btnType);
+        void OnButtonClick(int btnType,int position);
     }
 }

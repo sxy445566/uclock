@@ -36,7 +36,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     /**
      * ViewPager缓存页面数目;当前页面的相邻N各页面都会被缓存
      */
-    private int cachePagers = 4;
+    private static int CACHE_PAGERS = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         MainTabLayoutAdapter tabAdapter = new MainTabLayoutAdapter(getSupportFragmentManager(), fragmentList, Arrays.asList(tabList));
         //初始化viewpager
         mBinding.vpMain.setAdapter(tabAdapter);
-        mBinding.vpMain.setOffscreenPageLimit(cachePagers);//设置缓存页面数量，相邻的cachePagers个页面都会被缓存
+        mBinding.vpMain.setOffscreenPageLimit(CACHE_PAGERS);//设置缓存页面数量，相邻的cachePagers个页面都会被缓存
         mBinding.vpMain.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -107,8 +107,8 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
                 return true;
             }
         });
-        ImageView ivHeaderAvatar = (ImageView) mBinding.nvMain.findViewById(R.id.iv_header_avatar);
-        TextView tvHeaderName = (TextView) mBinding.nvMain.findViewById(R.id.tv_header_name);
+        ImageView ivHeaderAvatar = (ImageView) mBinding.nvMain.getHeaderView(0).findViewById(R.id.iv_header_avatar);
+        TextView tvHeaderName = (TextView) mBinding.nvMain.getHeaderView(0).findViewById(R.id.tv_header_name);
         ivHeaderAvatar.setImageResource(R.mipmap.aaa);
         tvHeaderName.setText("aaaa");
         //初始化floatingActionButton

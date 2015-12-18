@@ -20,11 +20,12 @@ import com.sxy.uclock.view.ListOnLongClickDialog.OnDialogButtonClick;
 import java.util.ArrayList;
 
 
-public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonClick {
+public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonClick, WorkAndRestListAdapter.WARListAdapterListener {
     private RecyclerView rvWorkAndRestList;
-    private ArrayList<WorkAndRestTemplateEntity> list;
+    private ArrayList<WorkAndRestTemplateEntity> mTemplateList;
     private WorkAndRestListAdapter adapterWorkAndRestList;
-    private LinearLayoutManager linearLayoutManager;
+    private LinearLayoutManager mLinearLayoutManager;
+    private ListOnLongClickDialog mListOnLongClickDialog;
 
     @Override
     public int initView() {
@@ -33,30 +34,15 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
 
     @Override
     public void initData(Bundle savedInstanceState) {
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        mLinearLayoutManager = new LinearLayoutManager(getContext());
         rvWorkAndRestList = (RecyclerView) view.findViewById(R.id.rv_work_and_rest_list);
         rvWorkAndRestList.setHasFixedSize(true);
-        rvWorkAndRestList.setLayoutManager(linearLayoutManager);
+        rvWorkAndRestList.setLayoutManager(mLinearLayoutManager);
         rvWorkAndRestList.setItemAnimator(new DefaultItemAnimator());
 
-        list = WorkAndRestTemplateBLL.getTemplateList();//获取模版列表
-        adapterWorkAndRestList = new WorkAndRestListAdapter(list, getContext());
-        adapterWorkAndRestList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(getActivity(), WorkAndRestActivity.class);
-                intent.putExtra("lab","details");
-                startActivity(intent);
-            }
-        });
-        adapterWorkAndRestList.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ListOnLongClickDialog dialog=new ListOnLongClickDialog(getActivity(),R.style.ListOnLongClickDialogStyle,WorkAndRestFragment.this);
-                dialog.show();
-                return true;
-            }
-        });
+        mTemplateList = WorkAndRestTemplateBLL.getTemplateList();//获取模版列表
+        adapterWorkAndRestList = new WorkAndRestListAdapter(mTemplateList, getContext(), this);
+
         rvWorkAndRestList.setAdapter(adapterWorkAndRestList);
         rvWorkAndRestList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -66,9 +52,9 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int lastItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+                int lastItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
 
-                if (lastItemPosition >= list.size() - 1) {
+                if (lastItemPosition >= mTemplateList.size() - 1) {
                     ((MainActivity) getActivity()).mBinding.fbtnMain.setVisibility(View.GONE);
                 } else {
                     ((MainActivity) getActivity()).mBinding.fbtnMain.setVisibility(View.VISIBLE);
@@ -79,17 +65,22 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
     }
 
     public LinearLayoutManager getLinearLayoutManager() {
-        return linearLayoutManager;
+        return mLinearLayoutManager;
     }
 
 
     @Override
-    public void OnButtonClick(int btnType) {
-        switch (btnType){
+    public void OnButtonClick(int btnType, int position) {
+        switch (btnType) {
             case ListOnLongClickDialog.DEL_BUTTON:
-
+                if (WorkAndRestTemplateBLL.delTemplate(mTemplateList.get(position))) {
+                    mTemplateList.remove(position);
+                    adapterWorkAndRestList.notifyDataSetChanged();
+                    showToast("删除成功");
+                }
                 break;
             case ListOnLongClickDialog.CANCEL_BUTTON:
+                mListOnLongClickDialog.dismiss();
                 break;
         }
     }
@@ -97,5 +88,18 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
     @Override
     public void onClick(View v) {
 
+    }
+
+    @Override
+    public void onClick(int position) {
+        Intent intent = new Intent(getActivity(), WorkAndRestActivity.class);
+        intent.putExtra("lab", "details");
+        startActivity(intent);
+    }
+
+    @Override
+    public void OnLongClick(int position) {
+        mListOnLongClickDialog = new ListOnLongClickDialog(getActivity(), R.style.ListOnLongClickDialogStyle, WorkAndRestFragment.this, position);
+        mListOnLongClickDialog.show();
     }
 }

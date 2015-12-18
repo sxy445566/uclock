@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public abstract class BaseFragment extends Fragment implements View.OnClickListener {
     protected OnFragmentInteractionListener mListener;
@@ -47,6 +48,18 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
             mListener.onFragmentInteraction(uri);
         }
     }
+    /**
+     * 显示Toast
+     *
+     * @param msg
+     */
+    protected void showToast(String msg) {
+        showToast(msg, 0);
+    }
+
+    protected void showToast(String msg, int time) {
+        Toast.makeText(getContext(),msg,time).show();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -58,6 +71,7 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
 
     @Override
     public void onDetach() {

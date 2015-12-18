@@ -21,4 +21,7 @@ public class WorkAndRestTemplateBLL {
         return list;
     }
 
+    public static boolean delTemplate(WorkAndRestTemplateEntity entity){
+        return true;
+    }
 }

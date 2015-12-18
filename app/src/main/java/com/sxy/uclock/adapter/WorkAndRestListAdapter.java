@@ -21,18 +21,18 @@ import java.util.List;
 public class WorkAndRestListAdapter extends RecyclerView.Adapter<WorkAndRestListAdapter.MyViewHolder> {
     private List<WorkAndRestTemplateEntity> mList;
     private Context mContext;
-    private View.OnClickListener mOnClickListener;
-    private View.OnLongClickListener mOnLongClickListener;
+    private WARListAdapterListener mWARListAdapterListener;
 
-    public WorkAndRestListAdapter(List<WorkAndRestTemplateEntity> pList, Context pContext) {
+    public WorkAndRestListAdapter(List<WorkAndRestTemplateEntity> pList, Context pContext,WARListAdapterListener warListAdapterListener) {
         mList = pList;
         mContext = pContext;
+        mWARListAdapterListener=warListAdapterListener;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ItemWorkAndRestListBinding listBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_work_and_rest_list, parent, false);
-        MyViewHolder viewHolder = new MyViewHolder(listBinding.getRoot(), mOnClickListener, mOnLongClickListener);
+        MyViewHolder viewHolder = new MyViewHolder(listBinding.getRoot(),mWARListAdapterListener);
         viewHolder.setBinding(listBinding);
         return viewHolder;
     }
@@ -61,26 +61,20 @@ public class WorkAndRestListAdapter extends RecyclerView.Adapter<WorkAndRestList
         holder.binding.executePendingBindings();
     }
 
-    public void setOnClickListener(View.OnClickListener listener) {
-        mOnClickListener = listener;
-    }
-
-    public void setOnLongClickListener(View.OnLongClickListener listener) {
-        mOnLongClickListener = listener;
-    }
-
     @Override
     public int getItemCount() {
         return mList.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
         private ItemWorkAndRestListBinding binding;
+        private WARListAdapterListener mWARListAdapterListener;
 
-        public MyViewHolder(View itemView, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener) {
+        public MyViewHolder(View itemView, WARListAdapterListener warListAdapterListener) {
             super(itemView);
-            itemView.setOnClickListener(onClickListener);
-            itemView.setOnLongClickListener(onLongClickListener);
+            mWARListAdapterListener=warListAdapterListener;
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         public ItemWorkAndRestListBinding getBinding() {
@@ -91,5 +85,20 @@ public class WorkAndRestListAdapter extends RecyclerView.Adapter<WorkAndRestList
             this.binding = binding;
         }
 
+        @Override
+        public void onClick(View v) {
+            mWARListAdapterListener.onClick(getAdapterPosition());
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            mWARListAdapterListener.OnLongClick(getAdapterPosition());
+            return true;
+        }
+    }
+
+    public interface WARListAdapterListener{
+        void onClick(int position);
+        void OnLongClick(int position);
     }
 }
