@@ -4,7 +4,7 @@
         <shape>
             <gradient  android:endColor="@android:color/darker_gray"
                 android:startColor="@android:color/darker_gray" />
-            <corners android:radius="8px" />
+            <corners android:radius="0px" />
             <stroke android:width="0px" />
         </shape>
     </item>
@@ -12,7 +12,7 @@
         <shape>
             <gradient  android:endColor="@android:color/darker_gray"
                 android:startColor="@android:color/darker_gray" />
-            <corners android:radius="8px" />
+            <corners android:radius="0px" />
             <stroke android:width="0px" />
         </shape>
     </item>
@@ -20,7 +20,7 @@
         <shape>
             <gradient  android:endColor="@android:color/white"
                 android:startColor="@android:color/white" />
-            <corners android:radius="8px" />
+            <corners android:radius="0px" />
             <stroke android:width="0px" />
         </shape>
     </item>

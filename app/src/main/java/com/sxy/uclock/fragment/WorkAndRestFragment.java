@@ -1,6 +1,7 @@
 package com.sxy.uclock.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,16 +15,18 @@ import com.sxy.uclock.adapter.WorkAndRestListAdapter;
 import com.sxy.uclock.base.BaseFragment;
 import com.sxy.uclock.model.WorkAndRestTemplateBLL;
 import com.sxy.uclock.model.WorkAndRestTemplateEntity;
+import com.sxy.uclock.view.DividerItemDecoration;
 import com.sxy.uclock.view.ListOnLongClickDialog;
 import com.sxy.uclock.view.ListOnLongClickDialog.OnDialogButtonClick;
+import com.sxy.uclock.view.WARTemplateInfoDialog;
 
 import java.util.ArrayList;
 
 
 public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonClick, WorkAndRestListAdapter.WARListAdapterListener {
     private RecyclerView rvWorkAndRestList;
-    private ArrayList<WorkAndRestTemplateEntity> mTemplateList;
-    private WorkAndRestListAdapter adapterWorkAndRestList;
+    public ArrayList<WorkAndRestTemplateEntity> mTemplateList;
+    public WorkAndRestListAdapter adapterWorkAndRestList;
     private LinearLayoutManager mLinearLayoutManager;
     private ListOnLongClickDialog mListOnLongClickDialog;
 
@@ -39,6 +42,7 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
         rvWorkAndRestList.setHasFixedSize(true);
         rvWorkAndRestList.setLayoutManager(mLinearLayoutManager);
         rvWorkAndRestList.setItemAnimator(new DefaultItemAnimator());
+        rvWorkAndRestList.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
 
         mTemplateList = WorkAndRestTemplateBLL.getTemplateList();//获取模版列表
         adapterWorkAndRestList = new WorkAndRestListAdapter(mTemplateList, getContext(), this);
@@ -79,6 +83,10 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
                     showToast("删除成功");
                 }
                 break;
+            case ListOnLongClickDialog.EDIT_BUTTON:
+                WARTemplateInfoDialog dialog=new WARTemplateInfoDialog(getContext(),R.style.WARTemplateInfoDialogStyle,mTemplateList.get(position));
+                dialog.show();
+                break;
             case ListOnLongClickDialog.CANCEL_BUTTON:
                 mListOnLongClickDialog.dismiss();
                 break;
@@ -92,14 +100,14 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
 
     @Override
     public void onClick(int position) {
-        Intent intent = new Intent(getActivity(), WorkAndRestActivity.class);
+        Intent intent = new Intent(getContext(), WorkAndRestActivity.class);
         intent.putExtra("lab", "details");
         startActivity(intent);
     }
 
     @Override
     public void OnLongClick(int position) {
-        mListOnLongClickDialog = new ListOnLongClickDialog(getActivity(), R.style.ListOnLongClickDialogStyle, WorkAndRestFragment.this, position);
+        mListOnLongClickDialog = new ListOnLongClickDialog(getContext(), R.style.ListOnLongClickDialogStyle, WorkAndRestFragment.this, position, 0);
         mListOnLongClickDialog.show();
     }
 }

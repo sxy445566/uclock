@@ -5,16 +5,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
+
         <Button
             android:id="@+id/btn_long_click_dialog_cancel"
             style="@style/DialogBtnStyle"
             android:layout_alignParentBottom="true"
-            android:text="@string/action_cancel"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:text="@string/action_cancel" />
+
         <Button
             android:id="@+id/btn_long_click_dialog_delete"
             style="@style/DialogBtnStyle"
             android:layout_above="@id/btn_long_click_dialog_cancel"
             android:text="@string/action_delete" />
+
+        <LinearLayout
+            android:id="@+id/lay_long_click_dialog_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/btn_long_click_dialog_delete"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_long_click_dialog_edit"
+                style="@style/DialogBtnStyle"
+                android:text="@string/action_edit" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/divider"/>
+        </LinearLayout>
+
     </RelativeLayout>
 </layout>

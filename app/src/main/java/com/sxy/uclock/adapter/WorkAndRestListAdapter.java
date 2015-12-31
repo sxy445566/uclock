@@ -29,6 +29,16 @@ public class WorkAndRestListAdapter extends RecyclerView.Adapter<WorkAndRestList
         mWARListAdapterListener=warListAdapterListener;
     }
 
+    public void insert(WorkAndRestTemplateEntity data, int position){
+        mList.add(position, data);
+        notifyItemInserted(position);
+    }
+
+    public void remove(int position){
+        mList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ItemWorkAndRestListBinding listBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_work_and_rest_list, parent, false);

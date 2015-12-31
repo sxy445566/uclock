@@ -23,7 +23,9 @@ import com.sxy.uclock.fragment.ImportantDatesFragment;
 import com.sxy.uclock.fragment.MonthPlanFragment;
 import com.sxy.uclock.fragment.WeekPlanFragment;
 import com.sxy.uclock.fragment.WorkAndRestFragment;
+import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 import com.sxy.uclock.tools.ModelUtils;
+import com.sxy.uclock.view.WARTemplateInfoDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +35,10 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     private String[] tabList;
     public ActivityMainBinding mBinding;
     private List<Fragment> fragmentList = new ArrayList<>();
+    private WorkAndRestFragment mWARFragment;
+    private WeekPlanFragment mWeekPlanFragment;
+    private MonthPlanFragment mMonthPlanFragment;
+    private ImportantDatesFragment mImportantDatesFragment;
     /**
      * ViewPager缓存页面数目;当前页面的相邻N各页面都会被缓存
      */
@@ -48,10 +54,10 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         mBinding.tbMain.setNavigationIcon(R.mipmap.toolbar_list_white_36dp);
         //初始化fragment
         tabList = this.getResources().getStringArray(R.array.main_tablelayout_array);
-        fragmentList.add(new WorkAndRestFragment());
-        fragmentList.add(new WeekPlanFragment());
-        fragmentList.add(new MonthPlanFragment());
-        fragmentList.add(new ImportantDatesFragment());
+        fragmentList.add(mWARFragment=new WorkAndRestFragment());
+        fragmentList.add(mWeekPlanFragment=new WeekPlanFragment());
+        fragmentList.add(mMonthPlanFragment=new MonthPlanFragment());
+        fragmentList.add(mImportantDatesFragment=new ImportantDatesFragment());
         MainTabLayoutAdapter tabAdapter = new MainTabLayoutAdapter(getSupportFragmentManager(), fragmentList, Arrays.asList(tabList));
         //初始化viewpager
         mBinding.vpMain.setAdapter(tabAdapter);
@@ -152,9 +158,9 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         switch (v.getId()){
             case R.id.fbtn_main:
                 if ( fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
-                    Intent intent=new Intent(this,WorkAndRestActivity.class);
-                    intent.putExtra("lab","add");
-                    startActivity(intent);
+                    WARTemplateInfoDialog dialog=new WARTemplateInfoDialog(this,R.style.WARTemplateInfoDialogStyle,new WorkAndRestTemplateEntity());
+                    dialog.show();
+
                 }
                 if ( fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
 

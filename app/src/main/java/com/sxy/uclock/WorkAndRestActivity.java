@@ -1,5 +1,6 @@
 package com.sxy.uclock;
 
+import android.app.Dialog;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;

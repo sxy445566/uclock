@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="com.sxy.uclock.model.WorkAndRestTemplateBLL" />
+        <variable
+            name="templateEntity"
+            type="com.sxy.uclock.model.WorkAndRestTemplateEntity" />
+    </data>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <EditText
+            android:id="@+id/et_war_template_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@{templateEntity.templateName}"
+            android:textColor="@color/primary_text"
+            android:hint="@string/war_template_name_hint"
+            android:textColorHint="@color/divider" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_mon"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,1)?@color/primary:@color/window_background}"
+               style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,1)?@color/icons:@color/secondary_text}"
+                    android:text="@string/mon" />
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_tue"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,2)?@color/primary:@color/window_background}"
+                style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,2)?@color/icons:@color/secondary_text}"
+                    android:text="@string/tue" />
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_wed"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,3)?@color/primary:@color/window_background}"
+                style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,3)?@color/icons:@color/secondary_text}"
+                    android:text="@string/wed" />
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_thu"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,4)?@color/primary:@color/window_background}"
+                style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,4)?@color/icons:@color/secondary_text}"
+                    android:text="@string/thu" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_fri"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,5)?@color/primary:@color/window_background}"
+                style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,5)?@color/icons:@color/secondary_text}"
+                    android:text="@string/fri" />
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_sat"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,6)?@color/primary:@color/window_background}"
+                style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,6)?@color/icons:@color/secondary_text}"
+                    android:text="@string/sat" />
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_war_template_info_sun"
+                app:cardBackgroundColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,7)?@color/primary:@color/window_background}"
+                style="@style/WeekButtonCardView">
+
+                <TextView
+                    style="@style/WeekButton"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,7)?@color/icons:@color/secondary_text}"
+                    android:text="@string/sun" />
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardBackgroundColor="@color/cancel_button"
+                android:layout_weight="1">
+                <TextView
+                    style="@style/SureAndCancelButton"
+                    android:text="@string/action_cancel" />
+            </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/primary"
+                android:layout_margin="8dp"
+                android:layout_weight="1">
+                <TextView
+                    style="@style/SureAndCancelButton"
+                    android:text="@string/action_save" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+    </LinearLayout>
+</layout>
