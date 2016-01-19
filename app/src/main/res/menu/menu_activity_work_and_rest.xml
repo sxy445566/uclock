@@ -2,5 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.sxy.uclock.WorkAndRestActivity">
-
+    <item android:id="@+id/action_delete"
+        android:icon="@mipmap/toolbar_delete"
+        android:title="@string/action_delete"
+        android:orderInCategory="100" app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_add"
+        android:icon="@mipmap/floatingactionbutton_add_white_36dp"
+        android:title="@string/action_add"
+        android:orderInCategory="100" app:showAsAction="ifRoom" />
 </menu>

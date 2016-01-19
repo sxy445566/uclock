@@ -1,6 +1,5 @@
 package com.sxy.uclock;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +8,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,28 +26,34 @@ import com.sxy.uclock.fragment.WeekPlanFragment;
 import com.sxy.uclock.fragment.WorkAndRestFragment;
 import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 import com.sxy.uclock.tools.ModelUtils;
+import com.sxy.uclock.view.BatchDeleteDialog;
 import com.sxy.uclock.view.WARTemplateInfoDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener{
+public class MainActivity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener,BatchDeleteDialog.OnBatchDeleteDialogButtonClick{
     private String[] tabList;
-    public ActivityMainBinding mBinding;
+    private ActivityMainBinding mBinding;
     private List<Fragment> fragmentList = new ArrayList<>();
     private WorkAndRestFragment mWARFragment;
     private WeekPlanFragment mWeekPlanFragment;
     private MonthPlanFragment mMonthPlanFragment;
     private ImportantDatesFragment mImportantDatesFragment;
+    private boolean isDelModel;
     /**
      * ViewPager缓存页面数目;当前页面的相邻N各页面都会被缓存
      */
     private static int CACHE_PAGERS = 4;
 
+    public ActivityMainBinding getMainBinding(){
+        return mBinding;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isDelModel = false;
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         //初始化toolbar
         mBinding.tbMain.setTitle(getResources().getString(R.string.app_name));
@@ -54,10 +61,10 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         mBinding.tbMain.setNavigationIcon(R.mipmap.toolbar_list_white_36dp);
         //初始化fragment
         tabList = this.getResources().getStringArray(R.array.main_tablelayout_array);
-        fragmentList.add(mWARFragment=new WorkAndRestFragment());
-        fragmentList.add(mWeekPlanFragment=new WeekPlanFragment());
-        fragmentList.add(mMonthPlanFragment=new MonthPlanFragment());
-        fragmentList.add(mImportantDatesFragment=new ImportantDatesFragment());
+        fragmentList.add(mWARFragment = new WorkAndRestFragment());
+        fragmentList.add(mWeekPlanFragment = new WeekPlanFragment());
+        fragmentList.add(mMonthPlanFragment = new MonthPlanFragment());
+        fragmentList.add(mImportantDatesFragment = new ImportantDatesFragment());
         MainTabLayoutAdapter tabAdapter = new MainTabLayoutAdapter(getSupportFragmentManager(), fragmentList, Arrays.asList(tabList));
         //初始化viewpager
         mBinding.vpMain.setAdapter(tabAdapter);
@@ -70,29 +77,29 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
 
             @Override
             public void onPageSelected(int position) {
-
-                Fragment fragment = fragmentList.get(position);
-                if (fragment instanceof WorkAndRestFragment) {
-                    if (((WorkAndRestFragment) fragment).getLinearLayoutManager().findLastVisibleItemPosition() < 19) {
-                        mBinding.fbtnMain.setVisibility(View.VISIBLE);
-                    } else {
-                        mBinding.fbtnMain.setVisibility(View.GONE);
+                if (isDelModel) {
+                } else {
+                    Fragment fragment = fragmentList.get(position);
+                    if (fragment instanceof WorkAndRestFragment) {
+                        if (((WorkAndRestFragment) fragment).getLinearLayoutManager().findLastVisibleItemPosition() < ((WorkAndRestFragment) fragment).getTemplateList().size()) {
+                            mBinding.fbtnMain.setVisibility(View.VISIBLE);
+                        } else {
+                            mBinding.fbtnMain.setVisibility(View.GONE);
+                        }
                     }
+                    if (fragment instanceof WeekPlanFragment) {
 
+                        mBinding.fbtnMain.setVisibility(View.VISIBLE);
+                    }
+                    if (fragment instanceof MonthPlanFragment) {
+
+                        mBinding.fbtnMain.setVisibility(View.VISIBLE);
+                    }
+                    if (fragment instanceof ImportantDatesFragment) {
+
+                        mBinding.fbtnMain.setVisibility(View.VISIBLE);
+                    }
                 }
-                if (fragment instanceof WeekPlanFragment) {
-
-                    mBinding.fbtnMain.setVisibility(View.VISIBLE);
-                }
-                if (fragment instanceof MonthPlanFragment) {
-
-                    mBinding.fbtnMain.setVisibility(View.VISIBLE);
-                }
-                if (fragment instanceof ImportantDatesFragment) {
-
-                    mBinding.fbtnMain.setVisibility(View.VISIBLE);
-                }
-
             }
 
             @Override
@@ -100,6 +107,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
 
             }
         });
+        //初始化TabLayout
         mBinding.tlMain.setupWithViewPager(mBinding.vpMain);
         mBinding.tlMain.setTabsFromPagerAdapter(tabAdapter);
         mBinding.tlMain.setTabMode(TabLayout.MODE_FIXED);
@@ -119,6 +127,8 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         tvHeaderName.setText("aaaa");
         //初始化floatingActionButton
         mBinding.fbtnMain.setOnClickListener(this);
+        //初始化删除按钮
+        mBinding.cvMainDel.setOnClickListener(this);
     }
 
     @Override
@@ -136,13 +146,77 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_edit) {
-            return true;
+        if (id == R.id.action_delete) {
+            showDeleteModel();
         }
         if (id == android.R.id.home) {
-            mBinding.dlMain.openDrawer(GravityCompat.START);
+            if (isDelModel) {
+                quitDeleteModel();
+            } else {
+                mBinding.dlMain.openDrawer(GravityCompat.START);
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteModel() {
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+            mWARFragment.startDelete();
+            onDelete();
+        }
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+
+        }
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+
+        }
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+
+        }
+    }
+
+    private void quitDeleteModel() {
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+            mWARFragment.quitDelete();
+            onQuitDelete();
+        }
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+
+        }
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+
+        }
+        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+
+        }
+    }
+
+    private void onDelete() {
+        mBinding.tlMain.setVisibility(View.GONE);
+        mBinding.cvMainDel.setVisibility(View.VISIBLE);
+        mBinding.fbtnMain.setVisibility(View.GONE);
+        mBinding.dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        mBinding.tbMain.setTitle(R.string.action_delete);
+        mBinding.tbMain.setNavigationIcon(R.mipmap.toolbar_back_white_36dp);
+        for (int i = 0; i < mBinding.tbMain.getMenu().size(); i++) {
+            mBinding.tbMain.getMenu().getItem(i).setVisible(false);
+        }
+        mBinding.vpMain.setScanScroll(false);
+        isDelModel = true;
+    }
+
+    private void onQuitDelete() {
+        mBinding.tlMain.setVisibility(View.VISIBLE);
+        mBinding.cvMainDel.setVisibility(View.GONE);
+        mBinding.fbtnMain.setVisibility(View.VISIBLE);
+        mBinding.dlMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        mBinding.tbMain.setTitle(getResources().getString(R.string.app_name));
+        mBinding.tbMain.setNavigationIcon(R.mipmap.toolbar_list_white_36dp);
+        for (int i = 0; i < mBinding.tbMain.getMenu().size(); i++) {
+            mBinding.tbMain.getMenu().getItem(i).setVisible(true);
+        }
+        mBinding.vpMain.setScanScroll(true);
+        isDelModel = false;
     }
 
     @Override
@@ -155,20 +229,34 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         if (ModelUtils.isFastClick()) {
             return;
         }
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fbtn_main:
-                if ( fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
-                    WARTemplateInfoDialog dialog=new WARTemplateInfoDialog(this,R.style.WARTemplateInfoDialogStyle,new WorkAndRestTemplateEntity());
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+                    WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplateEntity());
                     dialog.show();
 
                 }
-                if ( fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
 
                 }
-                if ( fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
 
                 }
-                if ( fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+
+                }
+                break;
+            case R.id.cv_main_del:
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+                    mWARFragment.batchDelete();
+                }
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+
+                }
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+
+                }
+                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
 
                 }
                 break;
@@ -176,7 +264,28 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_MENU){
+            if (!isDelModel) {
+                BatchDeleteDialog dialog = new BatchDeleteDialog(this, R.style.ListOnLongClickDialogStyle, this);
+                dialog.show();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public void onBackPressed() {
-        ModelUtils.exitBy2Click(this);
+        if (isDelModel) {
+            quitDeleteModel();
+        } else {
+            ModelUtils.exitBy2Click(this);
+        }
+    }
+
+    @Override
+    public void OnButtonClick() {
+        showDeleteModel();
     }
 }

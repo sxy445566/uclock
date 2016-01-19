@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="com.sxy.uclock.model.WorkAndRestTemplateBLL" />
+
+        <variable
+            name="templateEntity"
+            type="com.sxy.uclock.model.WorkAndRestTemplateEntity" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/rl_template_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/civ_template_item_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/aaa" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/civ_template_item_logo"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{templateEntity.templateName}"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleFirst"
+                    android:text="@string/one"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,1)?@color/primary:@color/secondary_text}" />
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleNext"
+                    android:text="@string/two"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,2)?@color/primary:@color/secondary_text}" />
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleNext"
+                    android:text="@string/thr"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,3)?@color/primary:@color/secondary_text}" />
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleNext"
+                    android:text="@string/fou"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,4)?@color/primary:@color/secondary_text}" />
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleNext"
+                    android:text="@string/fiv"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,5)?@color/primary:@color/secondary_text}" />
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleNext"
+                    android:text="@string/six"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,6)?@color/primary:@color/secondary_text}" />
+
+                <TextView
+                    style="@style/WARTemplateWeekTextStyleNext"
+                    android:text="@string/sev"
+                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,7)?@color/primary:@color/secondary_text}" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/lay_template_item_isusing"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/iv_template_item_isusing"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/clock_36dp" />
+
+            <CheckBox
+                android:id="@+id/cb_template_item_del"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/divider"/>
+    </RelativeLayout>
+</layout>

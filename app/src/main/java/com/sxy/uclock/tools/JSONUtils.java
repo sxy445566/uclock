@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class JSONUtils {
+public class JsonUtils {
 	
 	/**
 	 * @function 转换JSONArray为list

@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">作息表</string>
     <string name="action_edit">编辑</string>
+    <string name="action_add">添加</string>
     <string name="action_delete">删除</string>
+    <string name="action_batch_delete">批量删除</string>
     <string name="action_cancel">取消</string>
     <string name="action_save">保存</string>
+    <string name="action_sure">确定</string>
+
+    <string name="dialog_del_title">删除提示</string>
+    <string name="dialog_del_success">删除成功</string>
     <!-- 星期 -->
     <string name="mon">周一</string>
     <string name="tue">周二</string>
@@ -19,7 +25,12 @@
     <string name="fiv">五</string>
     <string name="six">六</string>
     <string name="sev">日</string>
+    <!-- 作息模版页 -->
+    <string name="war_template_name_hint">请输入作息模版名称</string>
+    <string name="war_template_del_dialog_content">"确定要删除选择的模版吗？"</string>
+    <string name="war_template_del_null">"请选择要删除的模版"</string>
     <!-- 每日作息页 -->
     <string name="title_activity_work_and_rest">每日作息</string>
-    <string name="war_template_name_hint">请输入作息模版名称</string>
+    <string name="war_details_del_dialog_content">"确定要删除选择的作息时间吗？"</string>
+    <string name="war_details_del_null">"请选择要删除的作息时间"</string>
 </resources>

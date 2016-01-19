@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/btn_batch_delete_dialog_cancel"
+            style="@style/DialogBtnStyle"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dp"
+            android:text="@string/action_cancel" />
+
+        <Button
+            android:id="@+id/btn_batch_delete_dialog_delete"
+            style="@style/DialogBtnStyle"
+            android:layout_above="@id/btn_batch_delete_dialog_cancel"
+            android:text="@string/action_batch_delete" />
+
+
+    </RelativeLayout>
+</layout>

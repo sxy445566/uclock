@@ -31,6 +31,7 @@ public class SwipeBackLayout extends RelativeLayout {
     private OnSildingFinishListener onSildingFinishListener;
     private Drawable mShadowDrawable;
     private List<ViewPager> mViewPagers = new LinkedList<ViewPager>();
+    private boolean isDelModel;
 
     public SwipeBackLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -41,7 +42,11 @@ public class SwipeBackLayout extends RelativeLayout {
         mContentView = this;
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mScroller = new Scroller(context);
+        isDelModel=false;
+    }
 
+    public void setIsDelModel(boolean pIsDelModel){
+        isDelModel=pIsDelModel;
     }
 
     /**
@@ -87,32 +92,33 @@ public class SwipeBackLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                int moveX = (int) event.getRawX();
-                int deltaX = tempX - moveX;
-                tempX = moveX;
-                if (moveX - downX > mTouchSlop
-                        && Math.abs((int) event.getRawY() - downY) < mTouchSlop) {
-                    isSilding = true;
-                }
+        if (!isDelModel) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    int moveX = (int) event.getRawX();
+                    int deltaX = tempX - moveX;
+                    tempX = moveX;
+                    if (moveX - downX > mTouchSlop
+                            && Math.abs((int) event.getRawY() - downY) < mTouchSlop) {
+                        isSilding = true;
+                    }
 
-                if (moveX - downX >= 0 && isSilding) {
-                    mContentView.scrollBy(deltaX, 0);
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                isSilding = false;
-                if (mContentView.getScrollX() <= -viewWidth / 2) {
-                    isFinish = true;
-                    scrollRight();
-                } else {
-                    scrollOrigin();
-                    isFinish = false;
-                }
-                break;
+                    if (moveX - downX >= 0 && isSilding) {
+                        mContentView.scrollBy(deltaX, 0);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    isSilding = false;
+                    if (mContentView.getScrollX() <= -viewWidth / 2) {
+                        isFinish = true;
+                        scrollRight();
+                    } else {
+                        scrollOrigin();
+                        isFinish = false;
+                    }
+                    break;
+            }
         }
-
         return true;
     }
 

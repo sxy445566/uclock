@@ -10,65 +10,82 @@ import android.view.ViewGroup;
 
 import com.sxy.uclock.BR;
 import com.sxy.uclock.R;
+import com.sxy.uclock.base.BaseRecyclerViewAdapter;
+import com.sxy.uclock.base.BaseRecyclerViewHolder;
 import com.sxy.uclock.databinding.ItemWorkAndRestListBinding;
-import com.sxy.uclock.model.WorkAndRestTemplateEntity;
+import com.sxy.uclock.model.WorkAndRestDetailsEntity;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Created by xf on 2015/8/20.
+ * Created by Administrator on 2016/1/19.
  */
-public class WorkAndRestListAdapter extends RecyclerView.Adapter<WorkAndRestListAdapter.MyViewHolder> {
-    private List<WorkAndRestTemplateEntity> mList;
-    private Context mContext;
-    private WARListAdapterListener mWARListAdapterListener;
+public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
+    private ArrayList<WorkAndRestDetailsEntity> mList;
+    private static RecyclerViewAdapterListener mWARListAdapterListener;
+    private static RecyclerViewAdapterDelModelListener mWARListAdapterDelModelListener;
 
-    public WorkAndRestListAdapter(List<WorkAndRestTemplateEntity> pList, Context pContext,WARListAdapterListener warListAdapterListener) {
+    public WorkAndRestListAdapter(Context pContext, ArrayList<WorkAndRestDetailsEntity> pList, RecyclerViewAdapterListener warListAdapterListener, RecyclerViewAdapterDelModelListener warListAdapterDelModelListener) {
+        super(pContext);
         mList = pList;
-        mContext = pContext;
         mWARListAdapterListener=warListAdapterListener;
-    }
-
-    public void insert(WorkAndRestTemplateEntity data, int position){
-        mList.add(position, data);
-        notifyItemInserted(position);
-    }
-
-    public void remove(int position){
-        mList.remove(position);
-        notifyItemRemoved(position);
+        mWARListAdapterDelModelListener=warListAdapterDelModelListener;
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemWorkAndRestListBinding listBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_work_and_rest_list, parent, false);
-        MyViewHolder viewHolder = new MyViewHolder(listBinding.getRoot(),mWARListAdapterListener);
-        viewHolder.setBinding(listBinding);
-        return viewHolder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        ItemWorkAndRestListBinding binding= DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_work_and_rest_list,parent,false);
+        MyViewHolder holder=new MyViewHolder(binding.getRoot());
+        holder.setBinding(binding);
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
-        final WorkAndRestTemplateEntity entityWorkAndRestTemplate = mList.get(position);
-        holder.getBinding().setVariable(BR.templateEntity, entityWorkAndRestTemplate);
-        if (entityWorkAndRestTemplate.templateIsUsing.get()) {
-            holder.getBinding().ivItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
-        } else {
-            holder.getBinding().ivItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
-        }
-        holder.getBinding().layItemIsusing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (entityWorkAndRestTemplate.templateIsUsing.get()) {
-                    entityWorkAndRestTemplate.templateIsUsing.set(false);
-                    holder.getBinding().ivItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
-                } else {
-                    entityWorkAndRestTemplate.templateIsUsing.set(true);
-                    holder.getBinding().ivItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
-                }
+    public void onBindViewHolder(RecyclerView.ViewHolder hold, int position) {
+        MyViewHolder holder= (MyViewHolder) hold;
+        final ItemWorkAndRestListBinding binding= (ItemWorkAndRestListBinding) holder.getBinding();
+        final WorkAndRestDetailsEntity entity=mList.get(position);
+        binding.setVariable(BR.detailsEntity,entity);
+        if (entity.detailsIsDelModel.get()) {
+            binding.ivDetailsItemIsusing.setVisibility(View.GONE);
+            binding.cbDetailsItemDel.setVisibility(View.VISIBLE);
+            if (entity.detailsIsDelChecked.get()){
+                binding.cbDetailsItemDel.setChecked(true);
+            }else {
+                binding.cbDetailsItemDel.setChecked(false);
             }
-        });
-        holder.binding.executePendingBindings();
+            binding.cbDetailsItemDel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (binding.cbDetailsItemDel.isChecked()){
+                        entity.detailsIsDelChecked.set(true);
+                    }else{
+                        entity.detailsIsDelChecked.set(false);
+                    }
+                }
+            });
+        } else {
+            binding.ivDetailsItemIsusing.setVisibility(View.VISIBLE);
+            binding.cbDetailsItemDel.setVisibility(View.GONE);
+            if (entity.detailsIsUsing.get()) {
+                binding.ivDetailsItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
+            } else {
+                binding.ivDetailsItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
+            }
+            binding.layDetailsItemIsusing.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   if (entity.detailsIsUsing.get()){
+                       entity.detailsIsUsing.set(false);
+                       binding.ivDetailsItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
+                   }else{
+                       entity.detailsIsUsing.set(true);
+                       binding.ivDetailsItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
+                   }
+                }
+            });
+        }
+        binding.executePendingBindings();
     }
 
     @Override
@@ -76,39 +93,29 @@ public class WorkAndRestListAdapter extends RecyclerView.Adapter<WorkAndRestList
         return mList.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
-        private ItemWorkAndRestListBinding binding;
-        private WARListAdapterListener mWARListAdapterListener;
+    private class MyViewHolder extends BaseRecyclerViewHolder {
 
-        public MyViewHolder(View itemView, WARListAdapterListener warListAdapterListener) {
+        private MyViewHolder(View itemView) {
             super(itemView);
-            mWARListAdapterListener=warListAdapterListener;
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        public ItemWorkAndRestListBinding getBinding() {
-            return binding;
-        }
-
-        public void setBinding(ItemWorkAndRestListBinding binding) {
-            this.binding = binding;
         }
 
         @Override
         public void onClick(View v) {
-            mWARListAdapterListener.onClick(getAdapterPosition());
+            if (mList.get(getAdapterPosition()).detailsIsDelModel.get()) {
+                mWARListAdapterDelModelListener.onRecyclerViewItemDelModelClick(getAdapterPosition());
+            } else {
+                mWARListAdapterListener.onRecyclerViewItemClick(getAdapterPosition());
+            }
         }
 
         @Override
         public boolean onLongClick(View v) {
-            mWARListAdapterListener.OnLongClick(getAdapterPosition());
+            if (mList.get(getAdapterPosition()).detailsIsDelModel.get()) {
+                mWARListAdapterDelModelListener.onRecyclerViewItemDelModelLongClick(getAdapterPosition());
+            } else {
+                mWARListAdapterListener.onRecyclerViewItemLongClick(getAdapterPosition());
+            }
             return true;
         }
-    }
-
-    public interface WARListAdapterListener{
-        void onClick(int position);
-        void OnLongClick(int position);
     }
 }

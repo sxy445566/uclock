@@ -3,32 +3,34 @@
 
     <data>
 
-        <import type="com.sxy.uclock.model.WorkAndRestTemplateBLL" />
+        <import type="com.sxy.uclock.model.WorkAndRestDetailsBLL" />
+
         <variable
-            name="templateEntity"
-            type="com.sxy.uclock.model.WorkAndRestTemplateEntity" />
+            name="detailsEntity"
+            type="com.sxy.uclock.model.WorkAndRestDetailsEntity" />
     </data>
 
     <RelativeLayout
+        android:id="@+id/rl_details_item_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/civ_item_logo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+        <ImageView
+            android:id="@+id/iv_details_item_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@mipmap/aaa" />
+            android:src="@mipmap/notification" />
 
         <LinearLayout
-            android:id="@+id/lay_item_content"
+            android:id="@+id/lay_details_item_content"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@id/civ_item_logo"
+            android:layout_marginLeft="24dp"
+            android:layout_toRightOf="@id/iv_details_item_logo"
             android:orientation="vertical"
             android:paddingBottom="16dp"
             android:paddingTop="16dp">
@@ -36,68 +38,48 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{templateEntity.templateName}"
-                android:textSize="16sp" />
+                android:text="@{detailsEntity.detailsTime}"
+                android:textStyle="bold"
+                android:textSize="26sp"
+                android:textColor="@color/primary_text"/>
 
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{detailsEntity.detailsDescribe}"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleFirst"
-                    android:text="@string/one"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,1)?@color/primary:@color/secondary_text}"
-                     />
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleNext"
-                    android:text="@string/two"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,2)?@color/primary:@color/secondary_text}"
-                    />
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleNext"
-                    android:text="@string/thr"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,3)?@color/primary:@color/secondary_text}"
-                    />
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleNext"
-                    android:text="@string/fou"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,4)?@color/primary:@color/secondary_text}"
-                     />
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleNext"
-                    android:text="@string/fiv"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,5)?@color/primary:@color/secondary_text}"
-                     />
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleNext"
-                    android:text="@string/six"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,6)?@color/primary:@color/secondary_text}"
-                   />
-                <TextView
-                    style="@style/WARTemplateWeekTextStyleNext"
-                    android:text="@string/sev"
-                    android:textColor="@{WorkAndRestTemplateBLL.isHaveDay(templateEntity.templateDays,7)?@color/primary:@color/secondary_text}"
-                    />
-            </LinearLayout>
-
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/lay_item_isusing"
+            android:id="@+id/lay_details_item_isusing"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true">
 
             <ImageView
-                android:id="@+id/iv_item_isusing"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:id="@+id/iv_details_item_isusing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:src="@mipmap/clock_36dp" />
+                android:src="@mipmap/clock_36dp"/>
+
+            <CheckBox
+                android:id="@+id/cb_details_item_del"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"/>
         </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignLeft="@id/lay_details_item_content"
+            android:background="@color/divider"/>
     </RelativeLayout>
 </layout>
