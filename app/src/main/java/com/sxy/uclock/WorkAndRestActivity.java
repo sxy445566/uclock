@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,19 +21,19 @@ import com.sxy.uclock.base.BaseRecyclerViewAdapter;
 import com.sxy.uclock.databinding.ActivityWorkAndRestBinding;
 import com.sxy.uclock.model.WorkAndRestDetailsBLL;
 import com.sxy.uclock.model.WorkAndRestDetailsEntity;
-import com.sxy.uclock.view.ListOnLongClickDialog;
+import com.sxy.uclock.view.BottomPopUpMenuDialog;
 import com.sxy.uclock.view.MyMaterialDialog;
 import com.sxy.uclock.view.SwipeBackLayout;
 
 import java.util.ArrayList;
 
-public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout.OnSildingFinishListener,ListOnLongClickDialog.OnDialogButtonClick,BaseRecyclerViewAdapter.RecyclerViewAdapterListener,BaseRecyclerViewAdapter.RecyclerViewAdapterDelModelListener {
+public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout.OnSildingFinishListener, BottomPopUpMenuDialog.OnDialogButtonClick, BaseRecyclerViewAdapter.RecyclerViewAdapterListener, BaseRecyclerViewAdapter.RecyclerViewAdapterDelModelListener {
     private ActivityWorkAndRestBinding mBinding;
     private ArrayList<WorkAndRestDetailsEntity> mList;
     private ArrayList<WorkAndRestDetailsEntity> mDelList;
     private WorkAndRestListAdapter mAdapter;
     private LinearLayoutManager mLinearLayoutManager;
-    private ListOnLongClickDialog mListOnLongClickDialog;
+    private BottomPopUpMenuDialog mListOnLongClickDialog;
     private int mTemplateID;
     private boolean mIsDelModel;
 
@@ -56,10 +58,10 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         mBinding.cvWorkAndRestDel.setOnClickListener(this);
     }
 
-    private void initDate(){
-        mTemplateID=getIntent().getIntExtra("",0);
-        mList= WorkAndRestDetailsBLL.getWarListByTemplateID(mTemplateID);
-        mAdapter=new WorkAndRestListAdapter(this,mList,this,this);
+    private void initDate() {
+        mTemplateID = getIntent().getIntExtra("", 0);
+        mList = WorkAndRestDetailsBLL.getWarListByTemplateID(mTemplateID);
+        mAdapter = new WorkAndRestListAdapter(this, mList, this, this);
         mIsDelModel = false;
     }
 
@@ -77,18 +79,18 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case android.R.id.home:
-                if (mIsDelModel){
+                if (mIsDelModel) {
                     quitDeleteModel();
-                }else{
+                } else {
                     this.onBackPressed();
                 }
                 break;
             case R.id.action_add:
-                Intent intent=new Intent(this,AddActivity.class);
-                intent.putExtra("lab",AddActivity.ADD_WORK_AND_REST);
-                startActivity(intent);
+                Intent intent = new Intent(this, AddActivity.class);
+                intent.putExtra("lab", AddActivity.ADD_WORK_AND_REST);
+                startActivityForResult(intent, AddActivity.ADD_WORK_AND_REST);
                 break;
             case R.id.action_delete:
                 showDeleteModel();
@@ -96,6 +98,7 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void showDeleteModel() {
         mBinding.tbWorkAndRest.setTitle(R.string.action_delete);
         for (int i = 0; i < mBinding.tbWorkAndRest.getMenu().size(); i++) {
@@ -103,7 +106,7 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         }
         mBinding.sblWorkAndRest.setIsDelModel(true);
         mBinding.cvWorkAndRestDel.setVisibility(View.VISIBLE);
-        mDelList=new ArrayList<>();
+        mDelList = new ArrayList<>();
         for (WorkAndRestDetailsEntity entity : mList) {
             entity.detailsIsDelModel.set(true);
         }
@@ -125,11 +128,11 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         mAdapter.notifyDataSetChanged();
         mIsDelModel = false;
         mDelList.clear();
-        mDelList=null;
+        mDelList = null;
     }
 
     private void batchDelete() {
-        if (mDelList==null||mDelList.size()==0){
+        if (mDelList == null || mDelList.size() == 0) {
             showToast(getString(R.string.war_details_del_null));
             return;
         }
@@ -141,8 +144,8 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
                 .onAny(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (which.name().equals(DialogAction.POSITIVE.name())){
-                            if (WorkAndRestDetailsBLL.delDetails(mDelList)){
+                        if (which.name().equals(DialogAction.POSITIVE.name())) {
+                            if (WorkAndRestDetailsBLL.delDetails(mDelList)) {
                                 mAdapter.notifyDataSetChanged();
                                 showToast(getString(R.string.dialog_del_success));
                             }
@@ -151,9 +154,10 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
                 })
                 .show();
     }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.cv_work_and_rest_del:
                 batchDelete();
                 break;
@@ -170,13 +174,13 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         View view = mLinearLayoutManager.findViewByPosition(position);
         CheckBox cbDel = (CheckBox) view.findViewById(R.id.cb_details_item_del);
         cbDel.toggle();
-        WorkAndRestDetailsEntity entity=mList.get(position);
+        WorkAndRestDetailsEntity entity = mList.get(position);
         if (cbDel.isChecked()) {
             entity.detailsIsDelChecked.set(true);
             mDelList.add(entity);
         } else {
             entity.detailsIsDelChecked.set(false);
-            if (mDelList.contains(entity)){
+            if (mDelList.contains(entity)) {
                 mDelList.remove(entity);
             }
         }
@@ -189,51 +193,89 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
 
     @Override
     public void onRecyclerViewItemClick(int position) {
-        Intent intent=new Intent(this,AddActivity.class);
-        intent.putExtra("lab",AddActivity.ADD_WORK_AND_REST);
-        intent.putExtra("entity",mList.get(position));
-        startActivity(intent);
+        Intent intent = new Intent(this, AddActivity.class);
+        intent.putExtra("lab", AddActivity.EDIT_WORK_AND_REST);
+        intent.putExtra("entity", mList.get(position));
+        intent.putExtra("templateID", mList.get(position).templateID.get());
+        startActivityForResult(intent, AddActivity.EDIT_WORK_AND_REST);
     }
 
     @Override
     public void onRecyclerViewItemLongClick(int position) {
-        mListOnLongClickDialog = new ListOnLongClickDialog(this, R.style.ListOnLongClickDialogStyle, this, position, 1);
+        mListOnLongClickDialog = new BottomPopUpMenuDialog(this, R.style.ListOnLongClickDialogStyle, this, position, BottomPopUpMenuDialog.TAG_LONG_CLICK);
         mListOnLongClickDialog.show();
     }
 
     @Override
-    public void OnButtonClick(int btnType, final int position) {
+    public void OnButtonClick(int btnType, final int position, int viewTag) {
         switch (btnType) {
-            case ListOnLongClickDialog.DEL_BUTTON:
-                MyMaterialDialog.createMyMaterialDialog(this)
-                        .title(R.string.dialog_del_title)
-                        .content(R.string.war_details_del_dialog_content)
-                        .positiveText(R.string.action_sure)
-                        .negativeText(R.string.action_cancel)
-                        .onAny(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                if (which.name().equals(DialogAction.POSITIVE.name())){
-                                    if (WorkAndRestDetailsBLL.delDetail(mList.get(position))) {
-                                        mAdapter.notifyDataSetChanged();
-                                        showToast(getString(R.string.dialog_del_success));
+            case BottomPopUpMenuDialog.EDIT_BUTTON:
+                if (viewTag == BottomPopUpMenuDialog.TAG_LONG_CLICK) {
+                    Intent intent = new Intent(this, AddActivity.class);
+                    intent.putExtra("lab", AddActivity.EDIT_WORK_AND_REST);
+                    intent.putExtra("entity", mList.get(position));
+                    startActivityForResult(intent, AddActivity.EDIT_WORK_AND_REST);
+                } else if (viewTag == BottomPopUpMenuDialog.TAG_MENU_CLICK) {
+                    Intent intent = new Intent(this, AddActivity.class);
+                    intent.putExtra("lab", AddActivity.ADD_WORK_AND_REST);
+                    intent.putExtra("templateID", mList.get(position).templateID.get());
+                    startActivityForResult(intent, AddActivity.ADD_WORK_AND_REST);
+                }
+                break;
+            case BottomPopUpMenuDialog.DEL_BUTTON:
+                if (viewTag == BottomPopUpMenuDialog.TAG_LONG_CLICK) {
+                    MyMaterialDialog.createMyMaterialDialog(this)
+                            .title(R.string.dialog_del_title)
+                            .content(R.string.war_details_del_dialog_content)
+                            .positiveText(R.string.action_sure)
+                            .negativeText(R.string.action_cancel)
+                            .onAny(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    if (which.name().equals(DialogAction.POSITIVE.name())) {
+                                        if (WorkAndRestDetailsBLL.delDetail(mList.get(position))) {
+                                            mAdapter.notifyDataSetChanged();
+                                            showToast(getString(R.string.dialog_del_success));
+                                        }
                                     }
                                 }
-                            }
-                        })
-                        .show();
+                            })
+                            .show();
+                } else if (viewTag == BottomPopUpMenuDialog.TAG_MENU_CLICK) {
+                    showDeleteModel();
+                }
                 break;
-            case ListOnLongClickDialog.CANCEL_BUTTON:
+            case BottomPopUpMenuDialog.CANCEL_BUTTON:
                 mListOnLongClickDialog.dismiss();
                 break;
         }
     }
+
     @Override
     public void onBackPressed() {
-        if (mIsDelModel){
+        if (mIsDelModel) {
             quitDeleteModel();
-        }else {
+        } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            if (!mIsDelModel) {
+                BottomPopUpMenuDialog dialog = new BottomPopUpMenuDialog(this, R.style.ListOnLongClickDialogStyle, this, 0, BottomPopUpMenuDialog.TAG_MENU_CLICK);
+                dialog.show();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode==1) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 }

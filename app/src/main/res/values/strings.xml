@@ -33,4 +33,6 @@
     <string name="title_activity_work_and_rest">每日作息</string>
     <string name="war_details_del_dialog_content">"确定要删除选择的作息时间吗？"</string>
     <string name="war_details_del_null">"请选择要删除的作息时间"</string>
+    <!-- 添加页 -->
+    <string name="add_describe_hint">描述</string>
 </resources>

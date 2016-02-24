@@ -12,6 +12,7 @@ import java.util.Observable;
  */
 public class WorkAndRestDetailsEntity extends Observable implements Serializable{
     public WorkAndRestDetailsEntity(){
+        detailsIsUsing.set(true);
         detailsIsDelModel.set(false);
         detailsIsDelChecked.set(false);
     }

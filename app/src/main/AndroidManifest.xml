@@ -19,8 +19,9 @@
         <activity
             android:name=".WorkAndRestActivity"
             android:label="@string/title_activity_work_and_rest"
-            android:theme="@style/Translucent"></activity>
-        <activity android:name=".AddActivity"></activity>
+            android:theme="@style/Translucent"/>
+        <activity android:name=".AddActivity"
+            android:theme="@style/Translucent"/>
     </application>
 
 </manifest>

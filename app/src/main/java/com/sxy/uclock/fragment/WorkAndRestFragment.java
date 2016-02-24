@@ -19,8 +19,8 @@ import com.sxy.uclock.base.BaseFragment;
 import com.sxy.uclock.base.BaseRecyclerViewAdapter;
 import com.sxy.uclock.model.WorkAndRestTemplateBLL;
 import com.sxy.uclock.model.WorkAndRestTemplateEntity;
-import com.sxy.uclock.view.ListOnLongClickDialog;
-import com.sxy.uclock.view.ListOnLongClickDialog.OnDialogButtonClick;
+import com.sxy.uclock.view.BottomPopUpMenuDialog;
+import com.sxy.uclock.view.BottomPopUpMenuDialog.OnDialogButtonClick;
 import com.sxy.uclock.view.MyMaterialDialog;
 import com.sxy.uclock.view.WARTemplateInfoDialog;
 
@@ -32,7 +32,7 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
     private ArrayList<WorkAndRestTemplateEntity> mTemplateList;
     private WorkAndRestTemplateListAdapter mAdapterWorkAndRestList;
     private LinearLayoutManager mLinearLayoutManager;
-    private ListOnLongClickDialog mListOnLongClickDialog;
+    private BottomPopUpMenuDialog mListOnLongClickDialog;
     private ArrayList<WorkAndRestTemplateEntity> mDelTemplateList;
     private boolean mIsDelModel;
 
@@ -88,9 +88,9 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
 
 
     @Override
-    public void OnButtonClick(int btnType, final int position) {
+    public void OnButtonClick(int btnType, final int position,int viewTag) {
         switch (btnType) {
-            case ListOnLongClickDialog.DEL_BUTTON:
+            case BottomPopUpMenuDialog.DEL_BUTTON:
                 MyMaterialDialog.createMyMaterialDialog(getContext())
                         .title(R.string.dialog_del_title)
                         .content(R.string.war_template_del_dialog_content)
@@ -109,11 +109,11 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
                         })
                         .show();
                 break;
-            case ListOnLongClickDialog.EDIT_BUTTON:
+            case BottomPopUpMenuDialog.EDIT_BUTTON:
                 WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(getContext(), R.style.WARTemplateInfoDialogStyle, mTemplateList.get(position));
                 dialog.show();
                 break;
-            case ListOnLongClickDialog.CANCEL_BUTTON:
+            case BottomPopUpMenuDialog.CANCEL_BUTTON:
                 mListOnLongClickDialog.dismiss();
                 break;
         }
@@ -178,7 +178,7 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
 
     @Override
     public void onRecyclerViewItemLongClick(int position) {
-        mListOnLongClickDialog = new ListOnLongClickDialog(getContext(), R.style.ListOnLongClickDialogStyle, WorkAndRestFragment.this, position, 0);
+        mListOnLongClickDialog = new BottomPopUpMenuDialog(getContext(), R.style.ListOnLongClickDialogStyle, WorkAndRestFragment.this, position, 0);
         mListOnLongClickDialog.show();
     }
 

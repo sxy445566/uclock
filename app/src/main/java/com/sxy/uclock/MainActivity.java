@@ -26,22 +26,22 @@ import com.sxy.uclock.fragment.WeekPlanFragment;
 import com.sxy.uclock.fragment.WorkAndRestFragment;
 import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 import com.sxy.uclock.tools.ModelUtils;
-import com.sxy.uclock.view.BatchDeleteDialog;
+import com.sxy.uclock.view.BottomPopUpMenuDialog;
 import com.sxy.uclock.view.WARTemplateInfoDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener,BatchDeleteDialog.OnBatchDeleteDialogButtonClick{
-    private String[] tabList;
+public class MainActivity extends BaseActivity implements BaseFragment.OnFragmentInteractionListener,BottomPopUpMenuDialog.OnDialogButtonClick{
+    private String[] mTabList;
     private ActivityMainBinding mBinding;
-    private List<Fragment> fragmentList = new ArrayList<>();
+    private List<Fragment> mFragmentList = new ArrayList<>();
     private WorkAndRestFragment mWARFragment;
     private WeekPlanFragment mWeekPlanFragment;
     private MonthPlanFragment mMonthPlanFragment;
     private ImportantDatesFragment mImportantDatesFragment;
-    private boolean isDelModel;
+    private boolean mIsDelModel;
     /**
      * ViewPager缓存页面数目;当前页面的相邻N各页面都会被缓存
      */
@@ -53,19 +53,19 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isDelModel = false;
+        mIsDelModel = false;
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         //初始化toolbar
         mBinding.tbMain.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(mBinding.tbMain);
         mBinding.tbMain.setNavigationIcon(R.mipmap.toolbar_list_white_36dp);
         //初始化fragment
-        tabList = this.getResources().getStringArray(R.array.main_tablelayout_array);
-        fragmentList.add(mWARFragment = new WorkAndRestFragment());
-        fragmentList.add(mWeekPlanFragment = new WeekPlanFragment());
-        fragmentList.add(mMonthPlanFragment = new MonthPlanFragment());
-        fragmentList.add(mImportantDatesFragment = new ImportantDatesFragment());
-        MainTabLayoutAdapter tabAdapter = new MainTabLayoutAdapter(getSupportFragmentManager(), fragmentList, Arrays.asList(tabList));
+        mTabList = this.getResources().getStringArray(R.array.main_tablelayout_array);
+        mFragmentList.add(mWARFragment = new WorkAndRestFragment());
+        mFragmentList.add(mWeekPlanFragment = new WeekPlanFragment());
+        mFragmentList.add(mMonthPlanFragment = new MonthPlanFragment());
+        mFragmentList.add(mImportantDatesFragment = new ImportantDatesFragment());
+        MainTabLayoutAdapter tabAdapter = new MainTabLayoutAdapter(getSupportFragmentManager(), mFragmentList, Arrays.asList(mTabList));
         //初始化viewpager
         mBinding.vpMain.setAdapter(tabAdapter);
         mBinding.vpMain.setOffscreenPageLimit(CACHE_PAGERS);//设置缓存页面数量，相邻的cachePagers个页面都会被缓存
@@ -77,9 +77,9 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
 
             @Override
             public void onPageSelected(int position) {
-                if (isDelModel) {
+                if (mIsDelModel) {
                 } else {
-                    Fragment fragment = fragmentList.get(position);
+                    Fragment fragment = mFragmentList.get(position);
                     if (fragment instanceof WorkAndRestFragment) {
                         if (((WorkAndRestFragment) fragment).getLinearLayoutManager().findLastVisibleItemPosition() < ((WorkAndRestFragment) fragment).getTemplateList().size()) {
                             mBinding.fbtnMain.setVisibility(View.VISIBLE);
@@ -150,7 +150,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
             showDeleteModel();
         }
         if (id == android.R.id.home) {
-            if (isDelModel) {
+            if (mIsDelModel) {
                 quitDeleteModel();
             } else {
                 mBinding.dlMain.openDrawer(GravityCompat.START);
@@ -160,33 +160,33 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     }
 
     private void showDeleteModel() {
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
             mWARFragment.startDelete();
             onDelete();
         }
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
 
         }
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
 
         }
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
 
         }
     }
 
     private void quitDeleteModel() {
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
             mWARFragment.quitDelete();
             onQuitDelete();
         }
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
 
         }
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
 
         }
-        if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+        if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
 
         }
     }
@@ -202,7 +202,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
             mBinding.tbMain.getMenu().getItem(i).setVisible(false);
         }
         mBinding.vpMain.setScanScroll(false);
-        isDelModel = true;
+        mIsDelModel = true;
     }
 
     private void onQuitDelete() {
@@ -216,7 +216,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
             mBinding.tbMain.getMenu().getItem(i).setVisible(true);
         }
         mBinding.vpMain.setScanScroll(true);
-        isDelModel = false;
+        mIsDelModel = false;
     }
 
     @Override
@@ -231,32 +231,32 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         }
         switch (v.getId()) {
             case R.id.fbtn_main:
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
                     WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplateEntity());
                     dialog.show();
 
                 }
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
 
                 }
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
 
                 }
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
 
                 }
                 break;
             case R.id.cv_main_del:
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
                     mWARFragment.batchDelete();
                 }
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WeekPlanFragment) {
 
                 }
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof MonthPlanFragment) {
 
                 }
-                if (fragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
+                if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof ImportantDatesFragment) {
 
                 }
                 break;
@@ -266,8 +266,8 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_MENU){
-            if (!isDelModel) {
-                BatchDeleteDialog dialog = new BatchDeleteDialog(this, R.style.ListOnLongClickDialogStyle, this);
+            if (!mIsDelModel) {
+                BottomPopUpMenuDialog dialog = new BottomPopUpMenuDialog(this, R.style.ListOnLongClickDialogStyle, this,0,BottomPopUpMenuDialog.TAG_MENU_CLICK);
                 dialog.show();
                 return true;
             }
@@ -277,7 +277,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
 
     @Override
     public void onBackPressed() {
-        if (isDelModel) {
+        if (mIsDelModel) {
             quitDeleteModel();
         } else {
             ModelUtils.exitBy2Click(this);
@@ -285,7 +285,15 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
     }
 
     @Override
-    public void OnButtonClick() {
-        showDeleteModel();
+    public void OnButtonClick(int btnType, int position,int viewTag) {
+        switch (btnType){
+            case BottomPopUpMenuDialog.DEL_BUTTON:
+                showDeleteModel();
+                break;
+            case BottomPopUpMenuDialog.EDIT_BUTTON:
+                WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplateEntity());
+                dialog.show();
+                break;
+        }
     }
 }
