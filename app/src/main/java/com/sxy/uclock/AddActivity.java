@@ -33,8 +33,11 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     public static final int ADD_IMPORTANT_DATES = 40;
     public static final int EDIT_IMPORTANT_DATES = 41;
     private ActivityAddBinding mBinding;
+    private WheelView wheelMonth, wheelDay, wheelWeekDay, wheelTime, wheelMin;
     private int mLabel;
     private Serializable mEntity;
+    private String[] weekArray = new String[]{"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
+    private Calendar cal = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,12 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add);
         setSupportActionBar(mBinding.tbAdd);
         mBinding.tbAdd.setNavigationIcon(R.mipmap.toolbar_back_white_36dp);
+
+        int curYear = cal.get(Calendar.YEAR);
+        int curMonth = cal.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
+        int curDate = cal.get(Calendar.DATE);
+        int curWeekDay = cal.get(Calendar.DAY_OF_WEEK);
+
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
                 if (mEntity != null) {
@@ -64,10 +73,12 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
                 if (mEntity == null) {
                     mEntity = new WorkAndRestDetailsEntity();
                     ((WorkAndRestDetailsEntity) mEntity).templateID.set(templateID);
-                    mBinding.tvAddTime.setText("07:30");
+                    int curTime = cal.get(Calendar.HOUR_OF_DAY);
+                    int curMin = cal.get(Calendar.MINUTE);
+                    String time = (curTime < 10 ? "0" + curTime : curTime) + ":" + (curMin < 10 ? "0" + curMin : curMin);
+                    mBinding.tvAddTime.setText(time);
                     mBinding.ivAddIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
                 }
-
                 break;
             case ADD_WEEK_PLAN:
                 break;
@@ -79,6 +90,11 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         mBinding.cvAddTime.setOnClickListener(this);
         mBinding.ivAddIsusing.setOnClickListener(this);
         mBinding.sblAdd.setOnSildingFinishListener(this);
+        //设置焦点
+        mBinding.sblAdd.setFocusable(true);
+        mBinding.sblAdd.setFocusableInTouchMode(true);
+        mBinding.sblAdd.requestFocus();
+        //初始化datePicker
         initDataPicker();
     }
 
@@ -102,6 +118,9 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     }
 
     private void saveEntity() {
+        if (isScrolling) {
+            return;
+        }
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
                 setEntity();
@@ -139,21 +158,20 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     }
 
     private void initDataPicker() {
-        Calendar c = Calendar.getInstance();
-        int curYear = c.get(Calendar.YEAR);
-        int curMonth = c.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
-        int curDate = c.get(Calendar.DATE);
-        int curWeekDay = c.get(Calendar.DAY_OF_WEEK);
-        int curTime = c.get(Calendar.HOUR_OF_DAY);
-        int curMin = c.get(Calendar.MINUTE);
+        int curYear = cal.get(Calendar.YEAR);
+        int curMonth = cal.get(Calendar.MONTH) + 1;//通过Calendar算出的月数要+1
+        int curDate = cal.get(Calendar.DATE);
+        int curWeekDay = cal.get(Calendar.DAY_OF_WEEK);
+        int curTime = cal.get(Calendar.HOUR_OF_DAY);
+        int curMin = cal.get(Calendar.MINUTE);
         View dataPickerView = LayoutInflater.from(this).inflate(R.layout.view_date_picker, null);
-        ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dataPickerView.setLayoutParams(params);
-        WheelView wheelMonth = (WheelView) dataPickerView.findViewById(R.id.wv_month);
-        WheelView wheelDay = (WheelView) dataPickerView.findViewById(R.id.wv_day);
-        WheelView wheelWeekDay = (WheelView) dataPickerView.findViewById(R.id.wv_weekday);
-        WheelView wheelTime = (WheelView) dataPickerView.findViewById(R.id.wv_time);
-        WheelView wheelMin = (WheelView) dataPickerView.findViewById(R.id.wv_min);
+        wheelMonth = (WheelView) dataPickerView.findViewById(R.id.wv_month);
+        wheelDay = (WheelView) dataPickerView.findViewById(R.id.wv_day);
+        wheelWeekDay = (WheelView) dataPickerView.findViewById(R.id.wv_weekday);
+        wheelTime = (WheelView) dataPickerView.findViewById(R.id.wv_time);
+        wheelMin = (WheelView) dataPickerView.findViewById(R.id.wv_min);
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
             case ADD_WORK_AND_REST:
@@ -188,14 +206,14 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         }
         if (wheelDay.getVisibility() == View.VISIBLE) {
             NumericWheelAdapter numericWheelAdapter = new NumericWheelAdapter(this, 1, getDay(curYear, curMonth), "%02d");
-            numericWheelAdapter.setLabel("日");
+            numericWheelAdapter.setLabel("号");
             wheelDay.setViewAdapter(numericWheelAdapter);
             wheelDay.setCurrentItem(curDate - 1);
             wheelDay.setCyclic(true);//是否可循环滑动
             wheelDay.addScrollingListener(mScrollListener);
         }
         if (wheelWeekDay.getVisibility() == View.VISIBLE) {
-            ArrayWheelAdapter<String> arrayWheelAdapter = new ArrayWheelAdapter<>(this, new String[]{"周一", "周二", "周三", "周四", "周五", "周六", "周日"});
+            ArrayWheelAdapter<String> arrayWheelAdapter = new ArrayWheelAdapter<>(this, weekArray);
             wheelWeekDay.setViewAdapter(arrayWheelAdapter);
             wheelWeekDay.setCurrentItem(curWeekDay - 1);
             wheelWeekDay.setCyclic(true);//是否可循环滑动
@@ -221,17 +239,47 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         mBinding.layAddDatapicker.setVisibility(View.GONE);
     }
 
+    private boolean isScrolling = false;
     private OnWheelScrollListener mScrollListener = new OnWheelScrollListener() {
         @Override
         public void onScrollingStarted(WheelView wheel) {
-
+            isScrolling = true;
         }
 
         @Override
         public void onScrollingFinished(WheelView wheel) {
-
+            switch (mLabel) {
+                case EDIT_WORK_AND_REST:
+                case ADD_WORK_AND_REST:
+                    initTime();
+                    break;
+                case ADD_WEEK_PLAN:
+                case EDIT_WEEK_PLAN:
+                    mBinding.tvAddDate.setText(weekArray[wheelWeekDay.getCurrentItem()]);
+                    initTime();
+                    break;
+                case ADD_MONTH_PLAN:
+                case EDIT_MONTH_PLAN:
+                    String day = (wheelDay.getCurrentItem() + 1) + "号";
+                    mBinding.tvAddDate.setText(day);
+                    initTime();
+                    break;
+                case ADD_IMPORTANT_DATES:
+                case EDIT_IMPORTANT_DATES:
+                    String data = (wheelMonth.getCurrentItem() + 1) + "月" + (wheelDay.getCurrentItem() + 1) + "号";
+                    mBinding.tvAddTime.setText(data);
+                    break;
+            }
+            isScrolling = false;
         }
     };
+
+    private void initTime() {
+        int selTime = wheelTime.getCurrentItem() + 1;
+        int selMin = wheelMin.getCurrentItem();
+        String time = (selTime < 10 ? "0" + selTime : selTime) + ":" + (selMin < 10 ? "0" + selMin : selMin);
+        mBinding.tvAddTime.setText(time);
+    }
 
     /**
      * @param year
@@ -284,7 +332,7 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
                 }
                 break;
             case R.id.cv_add_time:
-                if (mBinding.layAddDatapicker.getVisibility()==View.GONE) {
+                if (mBinding.layAddDatapicker.getVisibility() == View.GONE) {
                     mBinding.layAddDatapicker.setVisibility(View.VISIBLE);
                 }
                 break;

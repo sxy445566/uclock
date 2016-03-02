@@ -88,12 +88,11 @@
                 android:textColor="@color/primary_text"
                 android:textColorHint="@color/divider" />
         </LinearLayout>
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/lay_add_datapicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_alignParentBottom="true">
-        </LinearLayout>
+        </FrameLayout>
     </com.sxy.uclock.view.SwipeBackLayout>
 </layout>
