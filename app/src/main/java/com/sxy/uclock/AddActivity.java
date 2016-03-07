@@ -1,5 +1,6 @@
 package com.sxy.uclock;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import com.byl.datapicker.wheelview.OnWheelScrollListener;
 import com.byl.datapicker.wheelview.WheelView;
@@ -73,6 +75,7 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
                 if (mEntity == null) {
                     mEntity = new WorkAndRestDetailsEntity();
                     ((WorkAndRestDetailsEntity) mEntity).templateID.set(templateID);
+                    ((WorkAndRestDetailsEntity) mEntity).detailsType.set(WorkAndRestDetailsEntity.DETAILS_TYPE_WAR);
                     int curTime = cal.get(Calendar.HOUR_OF_DAY);
                     int curMin = cal.get(Calendar.MINUTE);
                     String time = (curTime < 10 ? "0" + curTime : curTime) + ":" + (curMin < 10 ? "0" + curMin : curMin);
@@ -145,6 +148,7 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
             case ADD_WORK_AND_REST:
+                ((WorkAndRestDetailsEntity) mEntity).detailsDate.set("");
                 ((WorkAndRestDetailsEntity) mEntity).detailsTime.set(mBinding.tvAddTime.getText().toString());
                 ((WorkAndRestDetailsEntity) mEntity).detailsDescribe.set(mBinding.etAddDescribe.getText().toString());
                 break;
@@ -228,7 +232,7 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
             wheelTime.addScrollingListener(mScrollListener);
         }
         if (wheelMin.getVisibility() == View.VISIBLE) {
-            NumericWheelAdapter numericWheelAdapter = new NumericWheelAdapter(this, 0, 60, "%02d");
+            NumericWheelAdapter numericWheelAdapter = new NumericWheelAdapter(this, 0, 59, "%02d");
             numericWheelAdapter.setLabel("分");
             wheelMin.setViewAdapter(numericWheelAdapter);
             wheelMin.setCurrentItem(curMin);
@@ -289,13 +293,24 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     private int getDay(int year, int month) {
         int day = 30;
         boolean flag = false;
-        switch (year % 4) {
-            case 0:
-                flag = true;
-                break;
-            default:
-                flag = false;
-                break;
+        if (year % 100 == 0) {
+            switch (year % 400) {
+                case 0:
+                    flag = true;
+                    break;
+                default:
+                    flag = false;
+                    break;
+            }
+        } else {
+            switch (year % 4) {
+                case 0:
+                    flag = true;
+                    break;
+                default:
+                    flag = false;
+                    break;
+            }
         }
         switch (month) {
             case 1:
@@ -332,6 +347,8 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
                 }
                 break;
             case R.id.cv_add_time:
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mBinding.etAddDescribe.getWindowToken(), 0);//强制隐藏软键盘
                 if (mBinding.layAddDatapicker.getVisibility() == View.GONE) {
                     mBinding.layAddDatapicker.setVisibility(View.VISIBLE);
                 }
@@ -346,7 +363,9 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
 
     @Override
     public void onBackPressed() {
-        setResult(1);
+        if (isScrolling) {
+            return;
+        }
         super.onBackPressed();
     }
 }
