@@ -20,11 +20,11 @@ import com.sxy.uclock.adapter.MainTabLayoutAdapter;
 import com.sxy.uclock.base.BaseActivity;
 import com.sxy.uclock.base.BaseFragment;
 import com.sxy.uclock.databinding.ActivityMainBinding;
+import com.sxy.uclock.db.WorkAndRestTemplate;
 import com.sxy.uclock.fragment.ImportantDatesFragment;
 import com.sxy.uclock.fragment.MonthPlanFragment;
 import com.sxy.uclock.fragment.WeekPlanFragment;
 import com.sxy.uclock.fragment.WorkAndRestFragment;
-import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 import com.sxy.uclock.tools.ModelUtils;
 import com.sxy.uclock.view.BottomPopUpMenuDialog;
 import com.sxy.uclock.view.WARTemplateInfoDialog;
@@ -232,7 +232,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
         switch (v.getId()) {
             case R.id.fbtn_main:
                 if (mFragmentList.get(mBinding.vpMain.getCurrentItem()) instanceof WorkAndRestFragment) {
-                    WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplateEntity());
+                    WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplate());
                     dialog.show();
 
                 }
@@ -291,7 +291,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.OnFragmen
                 showDeleteModel();
                 break;
             case BottomPopUpMenuDialog.EDIT_BUTTON:
-                WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplateEntity());
+                WARTemplateInfoDialog dialog = new WARTemplateInfoDialog(this, R.style.WARTemplateInfoDialogStyle, new WorkAndRestTemplate());
                 dialog.show();
                 break;
         }

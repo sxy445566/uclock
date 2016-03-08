@@ -1,1 +1,1 @@
-include ':app', ':datapicker'
+include ':app', ':datapicker', ':uclockdaogenerator'

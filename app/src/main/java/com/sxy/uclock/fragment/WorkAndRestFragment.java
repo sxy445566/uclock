@@ -17,8 +17,8 @@ import com.sxy.uclock.WorkAndRestActivity;
 import com.sxy.uclock.adapter.WorkAndRestTemplateListAdapter;
 import com.sxy.uclock.base.BaseFragment;
 import com.sxy.uclock.base.BaseRecyclerViewAdapter;
+import com.sxy.uclock.db.WorkAndRestTemplate;
 import com.sxy.uclock.model.WorkAndRestTemplateBLL;
-import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 import com.sxy.uclock.view.BottomPopUpMenuDialog;
 import com.sxy.uclock.view.BottomPopUpMenuDialog.OnDialogButtonClick;
 import com.sxy.uclock.view.MyMaterialDialog;
@@ -29,14 +29,14 @@ import java.util.ArrayList;
 
 public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonClick, BaseRecyclerViewAdapter.RecyclerViewAdapterListener, BaseRecyclerViewAdapter.RecyclerViewAdapterDelModelListener {
     private RecyclerView rvWorkAndRestList;
-    private ArrayList<WorkAndRestTemplateEntity> mTemplateList;
+    private ArrayList<WorkAndRestTemplate> mTemplateList;
     private WorkAndRestTemplateListAdapter mAdapterWorkAndRestList;
     private LinearLayoutManager mLinearLayoutManager;
     private BottomPopUpMenuDialog mListOnLongClickDialog;
-    private ArrayList<WorkAndRestTemplateEntity> mDelTemplateList;
+    private ArrayList<WorkAndRestTemplate> mDelTemplateList;
     private boolean mIsDelModel;
 
-    public ArrayList<WorkAndRestTemplateEntity> getTemplateList(){
+    public ArrayList<WorkAndRestTemplate> getTemplateList(){
         return mTemplateList;
     }
 
@@ -121,17 +121,17 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
 
     public void startDelete() {
         mDelTemplateList=new ArrayList<>();
-        for (WorkAndRestTemplateEntity entity : mTemplateList) {
-            entity.templateIsDelModel.set(true);
+        for (WorkAndRestTemplate entity : mTemplateList) {
+            entity.setTemplateIsDelModel(true);
         }
         mAdapterWorkAndRestList.notifyDataSetChanged();
         mIsDelModel = true;
     }
 
     public void quitDelete() {
-        for (WorkAndRestTemplateEntity entity : mTemplateList) {
-            entity.templateIsDelModel.set(false);
-            entity.templateIsDelChecked.set(false);
+        for (WorkAndRestTemplate entity : mTemplateList) {
+            entity.setTemplateIsDelModel(false);
+            entity.setTemplateIsDelChecked(false);
         }
         mAdapterWorkAndRestList.notifyDataSetChanged();
         mIsDelModel = false;
@@ -172,7 +172,7 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
     @Override
     public void onRecyclerViewItemClick(int position) {
         Intent intent = new Intent(getContext(), WorkAndRestActivity.class);
-        intent.putExtra("entity", mTemplateList.get(position).templateID.get());
+        intent.putExtra("templateID", mTemplateList.get(position).getTemplateID());
         startActivity(intent);
     }
 
@@ -187,12 +187,12 @@ public class WorkAndRestFragment extends BaseFragment implements OnDialogButtonC
         View view = mLinearLayoutManager.findViewByPosition(position);
         CheckBox cbDel = (CheckBox) view.findViewById(R.id.cb_template_item_del);
         cbDel.toggle();
-        WorkAndRestTemplateEntity entity=mTemplateList.get(position);
+        WorkAndRestTemplate entity=mTemplateList.get(position);
         if (cbDel.isChecked()) {
-            entity.templateIsDelChecked.set(true);
+            entity.setTemplateIsDelChecked(true);
             mDelTemplateList.add(entity);
         } else {
-            entity.templateIsDelChecked.set(false);
+            entity.setTemplateIsDelChecked(false);
             if (mDelTemplateList.contains(entity)){
                 mDelTemplateList.remove(entity);
             }

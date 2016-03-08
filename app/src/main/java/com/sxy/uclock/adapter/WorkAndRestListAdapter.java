@@ -13,7 +13,7 @@ import com.sxy.uclock.R;
 import com.sxy.uclock.base.BaseRecyclerViewAdapter;
 import com.sxy.uclock.base.BaseRecyclerViewHolder;
 import com.sxy.uclock.databinding.ItemWorkAndRestListBinding;
-import com.sxy.uclock.model.WorkAndRestDetailsEntity;
+import com.sxy.uclock.db.WorkAndRestDetails;
 
 import java.util.ArrayList;
 
@@ -21,11 +21,11 @@ import java.util.ArrayList;
  * Created by Administrator on 2016/1/19.
  */
 public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
-    private ArrayList<WorkAndRestDetailsEntity> mList;
+    private ArrayList<WorkAndRestDetails> mList;
     private static RecyclerViewAdapterListener mWARListAdapterListener;
     private static RecyclerViewAdapterDelModelListener mWARListAdapterDelModelListener;
 
-    public WorkAndRestListAdapter(Context pContext, ArrayList<WorkAndRestDetailsEntity> pList, RecyclerViewAdapterListener warListAdapterListener, RecyclerViewAdapterDelModelListener warListAdapterDelModelListener) {
+    public WorkAndRestListAdapter(Context pContext, ArrayList<WorkAndRestDetails> pList, RecyclerViewAdapterListener warListAdapterListener, RecyclerViewAdapterDelModelListener warListAdapterDelModelListener) {
         super(pContext);
         mList = pList;
         mWARListAdapterListener=warListAdapterListener;
@@ -44,12 +44,12 @@ public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder hold, int position) {
         MyViewHolder holder= (MyViewHolder) hold;
         final ItemWorkAndRestListBinding binding= (ItemWorkAndRestListBinding) holder.getBinding();
-        final WorkAndRestDetailsEntity entity=mList.get(position);
+        final WorkAndRestDetails entity=mList.get(position);
         binding.setVariable(BR.detailsEntity,entity);
-        if (entity.detailsIsDelModel.get()) {
+        if (entity.getDetailsIsDelModel()) {
             binding.ivDetailsItemIsusing.setVisibility(View.GONE);
             binding.cbDetailsItemDel.setVisibility(View.VISIBLE);
-            if (entity.detailsIsDelChecked.get()){
+            if (entity.getDetailsIsDelChecked()){
                 binding.cbDetailsItemDel.setChecked(true);
             }else {
                 binding.cbDetailsItemDel.setChecked(false);
@@ -58,16 +58,16 @@ public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
                 @Override
                 public void onClick(View v) {
                     if (binding.cbDetailsItemDel.isChecked()){
-                        entity.detailsIsDelChecked.set(true);
+                        entity.setDetailsIsDelChecked(true);
                     }else{
-                        entity.detailsIsDelChecked.set(false);
+                        entity.setDetailsIsDelChecked(false);
                     }
                 }
             });
         } else {
             binding.ivDetailsItemIsusing.setVisibility(View.VISIBLE);
             binding.cbDetailsItemDel.setVisibility(View.GONE);
-            if (entity.detailsIsUsing.get()) {
+            if (entity.getDetailsIsUsing()) {
                 binding.ivDetailsItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
             } else {
                 binding.ivDetailsItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
@@ -75,11 +75,11 @@ public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
             binding.layDetailsItemIsusing.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   if (entity.detailsIsUsing.get()){
-                       entity.detailsIsUsing.set(false);
+                   if (entity.getDetailsIsUsing()){
+                       entity.setDetailsIsUsing(false);
                        binding.ivDetailsItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
                    }else{
-                       entity.detailsIsUsing.set(true);
+                       entity.setDetailsIsUsing(true);
                        binding.ivDetailsItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
                    }
                 }
@@ -101,7 +101,7 @@ public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
 
         @Override
         public void onClick(View v) {
-            if (mList.get(getAdapterPosition()).detailsIsDelModel.get()) {
+            if (mList.get(getAdapterPosition()).getDetailsIsDelModel()) {
                 mWARListAdapterDelModelListener.onRecyclerViewItemDelModelClick(getAdapterPosition());
             } else {
                 mWARListAdapterListener.onRecyclerViewItemClick(getAdapterPosition());
@@ -110,7 +110,7 @@ public class WorkAndRestListAdapter extends BaseRecyclerViewAdapter {
 
         @Override
         public boolean onLongClick(View v) {
-            if (mList.get(getAdapterPosition()).detailsIsDelModel.get()) {
+            if (mList.get(getAdapterPosition()).getDetailsIsDelModel()) {
                 mWARListAdapterDelModelListener.onRecyclerViewItemDelModelLongClick(getAdapterPosition());
             } else {
                 mWARListAdapterListener.onRecyclerViewItemLongClick(getAdapterPosition());

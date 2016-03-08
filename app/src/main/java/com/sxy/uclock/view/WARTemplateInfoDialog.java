@@ -2,29 +2,18 @@ package com.sxy.uclock.view;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sxy.uclock.R;
 import com.sxy.uclock.databinding.DialogWartemplateInfoBinding;
+import com.sxy.uclock.db.WorkAndRestTemplate;
 import com.sxy.uclock.model.WorkAndRestTemplateBLL;
-import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 
 /**
  * 新建或修改作息模版Dialog
@@ -32,14 +21,14 @@ import com.sxy.uclock.model.WorkAndRestTemplateEntity;
 public class WARTemplateInfoDialog extends Dialog implements View.OnClickListener {
     private DialogWartemplateInfoBinding mBinding;
     private Context mContext;
-    private WorkAndRestTemplateEntity mTemplateEntity;
+    private WorkAndRestTemplate mTemplateEntity;
     private String mOldDays;
 
-    public WARTemplateInfoDialog(Context context, int themeResId, WorkAndRestTemplateEntity entity) {
+    public WARTemplateInfoDialog(Context context, int themeResId, WorkAndRestTemplate entity) {
         super(context, themeResId);
         mContext = context;
         if (entity == null) {
-            mTemplateEntity = new WorkAndRestTemplateEntity();
+            mTemplateEntity = new WorkAndRestTemplate();
         } else {
             mTemplateEntity = entity;
         }
@@ -53,10 +42,10 @@ public class WARTemplateInfoDialog extends Dialog implements View.OnClickListene
         mBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.dialog_wartemplate_info, null, false);
         setContentView(mBinding.getRoot());
         mBinding.setTemplateEntity(mTemplateEntity);
-        mOldDays = mTemplateEntity.templateDays.get();
+        mOldDays = mTemplateEntity.getTemplateDays();
         mBinding.executePendingBindings();//立即执行绑定数据操作
-        if (mTemplateEntity.templateName.get() != null) {
-            mBinding.etWarTemplateInfo.setSelection(mTemplateEntity.templateName.get().length() > 0 ? (mTemplateEntity.templateName.get().length()) : 0);
+        if (mTemplateEntity.getTemplateName() != null) {
+            mBinding.etWarTemplateInfo.setSelection(mTemplateEntity.getTemplateName().length() > 0 ? (mTemplateEntity.getTemplateName().length()) : 0);
         }
         setListener();
     }
@@ -99,7 +88,7 @@ public class WARTemplateInfoDialog extends Dialog implements View.OnClickListene
                 editDays(7);
                 break;
             case R.id.cv_war_template_info_cancel:
-                mTemplateEntity.templateDays.set(mOldDays);
+                mTemplateEntity.setTemplateDays(mOldDays);
                 this.dismiss();
                 break;
             case R.id.cv_war_template_info_save:
@@ -109,8 +98,11 @@ public class WARTemplateInfoDialog extends Dialog implements View.OnClickListene
                     return;
                 }
                 boolean isSave;
-                mTemplateEntity.templateName.set(name);
-                if (mTemplateEntity.templateID.get() == -1) {
+                mTemplateEntity.setTemplateName(name);
+                if (TextUtils.isEmpty(mTemplateEntity.getTemplateDays())){
+                    mTemplateEntity.setTemplateDays("");
+                }
+                if (mTemplateEntity.getTemplateID()==null) {
                     isSave = WorkAndRestTemplateBLL.addWorkAndRestTemplateEntity(mTemplateEntity);
                 } else {
                     isSave = WorkAndRestTemplateBLL.modifyWorkAndRestTemplateEntity(mTemplateEntity);
@@ -124,7 +116,7 @@ public class WARTemplateInfoDialog extends Dialog implements View.OnClickListene
     }
 
     private void editDays(int day) {
-        if (WorkAndRestTemplateBLL.isHaveDay(mTemplateEntity.templateDays.get(), day)) {
+        if (WorkAndRestTemplateBLL.isHaveDay(mTemplateEntity.getTemplateDays(), day)) {
             WorkAndRestTemplateBLL.delDay(mTemplateEntity, day);
         } else {
             WorkAndRestTemplateBLL.addDay(mTemplateEntity, day);

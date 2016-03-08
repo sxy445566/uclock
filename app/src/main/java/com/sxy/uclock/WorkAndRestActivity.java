@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,8 +18,8 @@ import com.sxy.uclock.adapter.WorkAndRestListAdapter;
 import com.sxy.uclock.base.BaseActivity;
 import com.sxy.uclock.base.BaseRecyclerViewAdapter;
 import com.sxy.uclock.databinding.ActivityWorkAndRestBinding;
+import com.sxy.uclock.db.WorkAndRestDetails;
 import com.sxy.uclock.model.WorkAndRestDetailsBLL;
-import com.sxy.uclock.model.WorkAndRestDetailsEntity;
 import com.sxy.uclock.view.BottomPopUpMenuDialog;
 import com.sxy.uclock.view.MyMaterialDialog;
 import com.sxy.uclock.view.SwipeBackLayout;
@@ -29,12 +28,12 @@ import java.util.ArrayList;
 
 public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout.OnSildingFinishListener, BottomPopUpMenuDialog.OnDialogButtonClick, BaseRecyclerViewAdapter.RecyclerViewAdapterListener, BaseRecyclerViewAdapter.RecyclerViewAdapterDelModelListener {
     private ActivityWorkAndRestBinding mBinding;
-    private ArrayList<WorkAndRestDetailsEntity> mList;
-    private ArrayList<WorkAndRestDetailsEntity> mDelList;
+    private ArrayList<WorkAndRestDetails> mList;
+    private ArrayList<WorkAndRestDetails> mDelList;
     private WorkAndRestListAdapter mAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private BottomPopUpMenuDialog mListOnLongClickDialog;
-    private int mTemplateID;
+    private long mTemplateID;
     private boolean mIsDelModel;
 
     @Override
@@ -59,8 +58,8 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
     }
 
     private void initDate() {
-        mTemplateID = getIntent().getIntExtra("", 0);
-        mList = WorkAndRestDetailsBLL.getWarListByTemplateID(mTemplateID);
+        mTemplateID = getIntent().getLongExtra("templateID",0);
+        mList = WorkAndRestDetailsBLL.getWarListByTemplateIDAndDetailsType(mTemplateID,WorkAndRestDetails.DETAILS_TYPE_WAR);
         mAdapter = new WorkAndRestListAdapter(this, mList, this, this);
         mIsDelModel = false;
     }
@@ -90,6 +89,7 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
             case R.id.action_add:
                 Intent intent = new Intent(this, AddActivity.class);
                 intent.putExtra("lab", AddActivity.ADD_WORK_AND_REST);
+                intent.putExtra("templateID", mTemplateID);
                 startActivityForResult(intent, AddActivity.ADD_WORK_AND_REST);
                 break;
             case R.id.action_delete:
@@ -107,8 +107,8 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         mBinding.sblWorkAndRest.setIsDelModel(true);
         mBinding.cvWorkAndRestDel.setVisibility(View.VISIBLE);
         mDelList = new ArrayList<>();
-        for (WorkAndRestDetailsEntity entity : mList) {
-            entity.detailsIsDelModel.set(true);
+        for (WorkAndRestDetails entity : mList) {
+            entity.setDetailsIsDelModel(true);
         }
         mAdapter.notifyDataSetChanged();
         mIsDelModel = true;
@@ -121,9 +121,9 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         }
         mBinding.sblWorkAndRest.setIsDelModel(false);
         mBinding.cvWorkAndRestDel.setVisibility(View.GONE);
-        for (WorkAndRestDetailsEntity entity : mList) {
-            entity.detailsIsDelModel.set(false);
-            entity.detailsIsDelChecked.set(false);
+        for (WorkAndRestDetails entity : mList) {
+            entity.setDetailsIsDelModel(false);
+            entity.setDetailsIsDelChecked(false);
         }
         mAdapter.notifyDataSetChanged();
         mIsDelModel = false;
@@ -174,12 +174,12 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         View view = mLinearLayoutManager.findViewByPosition(position);
         CheckBox cbDel = (CheckBox) view.findViewById(R.id.cb_details_item_del);
         cbDel.toggle();
-        WorkAndRestDetailsEntity entity = mList.get(position);
+        WorkAndRestDetails entity = mList.get(position);
         if (cbDel.isChecked()) {
-            entity.detailsIsDelChecked.set(true);
+            entity.setDetailsIsDelChecked(true);
             mDelList.add(entity);
         } else {
-            entity.detailsIsDelChecked.set(false);
+            entity.setDetailsIsDelChecked(false);
             if (mDelList.contains(entity)) {
                 mDelList.remove(entity);
             }
@@ -196,7 +196,6 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
         Intent intent = new Intent(this, AddActivity.class);
         intent.putExtra("lab", AddActivity.EDIT_WORK_AND_REST);
         intent.putExtra("entity", mList.get(position));
-        intent.putExtra("templateID", mList.get(position).templateID.get());
         startActivityForResult(intent, AddActivity.EDIT_WORK_AND_REST);
     }
 
@@ -218,7 +217,7 @@ public class WorkAndRestActivity extends BaseActivity implements SwipeBackLayout
                 } else if (viewTag == BottomPopUpMenuDialog.TAG_MENU_CLICK) {
                     Intent intent = new Intent(this, AddActivity.class);
                     intent.putExtra("lab", AddActivity.ADD_WORK_AND_REST);
-                    intent.putExtra("templateID", mList.get(position).templateID.get());
+                    intent.putExtra("templateID", mTemplateID);
                     startActivityForResult(intent, AddActivity.ADD_WORK_AND_REST);
                 }
                 break;

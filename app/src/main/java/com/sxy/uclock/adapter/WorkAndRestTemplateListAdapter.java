@@ -13,7 +13,7 @@ import com.sxy.uclock.R;
 import com.sxy.uclock.base.BaseRecyclerViewAdapter;
 import com.sxy.uclock.base.BaseRecyclerViewHolder;
 import com.sxy.uclock.databinding.ItemWorkAndRestTemplateListBinding;
-import com.sxy.uclock.model.WorkAndRestTemplateEntity;
+import com.sxy.uclock.db.WorkAndRestTemplate;
 
 import java.util.List;
 
@@ -21,11 +21,11 @@ import java.util.List;
  * Created by sxy on 2015/8/20.
  */
 public class WorkAndRestTemplateListAdapter extends BaseRecyclerViewAdapter {
-    private static List<WorkAndRestTemplateEntity> mList;
+    private static List<WorkAndRestTemplate> mList;
     private static RecyclerViewAdapterListener mWARListAdapterListener;
     private static RecyclerViewAdapterDelModelListener mWARListAdapterDelModelListener;
 
-    public WorkAndRestTemplateListAdapter(Context pContext,List<WorkAndRestTemplateEntity> pList,  RecyclerViewAdapterListener warListAdapterListener, RecyclerViewAdapterDelModelListener warListAdapterDelModelListener) {
+    public WorkAndRestTemplateListAdapter(Context pContext, List<WorkAndRestTemplate> pList, RecyclerViewAdapterListener warListAdapterListener, RecyclerViewAdapterDelModelListener warListAdapterDelModelListener) {
         super(pContext);
         mList = pList;
         mWARListAdapterListener = warListAdapterListener;
@@ -44,12 +44,12 @@ public class WorkAndRestTemplateListAdapter extends BaseRecyclerViewAdapter {
     public void onBindViewHolder(final RecyclerView.ViewHolder hold, int position) {
         final MyViewHolder holder = (MyViewHolder) hold;
         final ItemWorkAndRestTemplateListBinding binding= (ItemWorkAndRestTemplateListBinding) holder.getBinding();
-        final WorkAndRestTemplateEntity entityWorkAndRestTemplate = mList.get(position);
+        final WorkAndRestTemplate entityWorkAndRestTemplate = mList.get(position);
         binding.setVariable(BR.templateEntity, entityWorkAndRestTemplate);
-        if (entityWorkAndRestTemplate.templateIsDelModel.get()) {
+        if (entityWorkAndRestTemplate.isTemplateIsDelModel()) {
             binding.ivTemplateItemIsusing.setVisibility(View.GONE);
             binding.cbTemplateItemDel.setVisibility(View.VISIBLE);
-            if (entityWorkAndRestTemplate.templateIsDelChecked.get()){
+            if (entityWorkAndRestTemplate.isTemplateIsDelChecked()){
                 binding.cbTemplateItemDel.setChecked(true);
             }else {
                 binding.cbTemplateItemDel.setChecked(false);
@@ -58,16 +58,16 @@ public class WorkAndRestTemplateListAdapter extends BaseRecyclerViewAdapter {
                 @Override
                 public void onClick(View v) {
                     if (binding.cbTemplateItemDel.isChecked()){
-                        entityWorkAndRestTemplate.templateIsDelChecked.set(true);
+                        entityWorkAndRestTemplate.setTemplateIsDelChecked(true);
                     }else{
-                        entityWorkAndRestTemplate.templateIsDelChecked.set(false);
+                        entityWorkAndRestTemplate.setTemplateIsDelChecked(false);
                     }
                 }
             });
         } else {
             binding.ivTemplateItemIsusing.setVisibility(View.VISIBLE);
             binding.cbTemplateItemDel.setVisibility(View.GONE);
-            if (entityWorkAndRestTemplate.templateIsUsing.get()) {
+            if (entityWorkAndRestTemplate.getTemplateIsUsing()) {
                 binding.ivTemplateItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
             } else {
                 binding.ivTemplateItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
@@ -75,11 +75,11 @@ public class WorkAndRestTemplateListAdapter extends BaseRecyclerViewAdapter {
             binding.layTemplateItemIsusing.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (entityWorkAndRestTemplate.templateIsUsing.get()) {
-                        entityWorkAndRestTemplate.templateIsUsing.set(false);
+                    if (entityWorkAndRestTemplate.getTemplateIsUsing()) {
+                        entityWorkAndRestTemplate.setTemplateIsUsing(false);
                         binding.ivTemplateItemIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
                     } else {
-                        entityWorkAndRestTemplate.templateIsUsing.set(true);
+                        entityWorkAndRestTemplate.setTemplateIsUsing(true);
                         binding.ivTemplateItemIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
                     }
                 }
@@ -101,7 +101,7 @@ public class WorkAndRestTemplateListAdapter extends BaseRecyclerViewAdapter {
 
         @Override
         public void onClick(View v) {
-            if (mList.get(getAdapterPosition()).templateIsDelModel.get()) {
+            if (mList.get(getAdapterPosition()).isTemplateIsDelModel()) {
                 mWARListAdapterDelModelListener.onRecyclerViewItemDelModelClick(getAdapterPosition());
             } else {
                 mWARListAdapterListener.onRecyclerViewItemClick(getAdapterPosition());
@@ -110,7 +110,7 @@ public class WorkAndRestTemplateListAdapter extends BaseRecyclerViewAdapter {
 
         @Override
         public boolean onLongClick(View v) {
-            if (mList.get(getAdapterPosition()).templateIsDelModel.get()) {
+            if (mList.get(getAdapterPosition()).isTemplateIsDelModel()) {
                 mWARListAdapterDelModelListener.onRecyclerViewItemDelModelLongClick(getAdapterPosition());
             } else {
                 mWARListAdapterListener.onRecyclerViewItemLongClick(getAdapterPosition());

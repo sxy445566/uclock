@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,11 +19,10 @@ import com.byl.datapicker.wheelview.adapter.ArrayWheelAdapter;
 import com.byl.datapicker.wheelview.adapter.NumericWheelAdapter;
 import com.sxy.uclock.base.BaseActivity;
 import com.sxy.uclock.databinding.ActivityAddBinding;
+import com.sxy.uclock.db.WorkAndRestDetails;
 import com.sxy.uclock.model.WorkAndRestDetailsBLL;
-import com.sxy.uclock.model.WorkAndRestDetailsEntity;
 import com.sxy.uclock.view.SwipeBackLayout;
 
-import java.io.Serializable;
 import java.util.Calendar;
 
 public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildingFinishListener {
@@ -37,7 +37,7 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     private ActivityAddBinding mBinding;
     private WheelView wheelMonth, wheelDay, wheelWeekDay, wheelTime, wheelMin;
     private int mLabel;
-    private Serializable mEntity;
+    private Parcelable mEntity;
     private String[] weekArray = new String[]{"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
     private Calendar cal = Calendar.getInstance();
 
@@ -45,7 +45,7 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLabel = getIntent().getIntExtra("lab", -1);
-        mEntity = getIntent().getSerializableExtra("entity");
+        mEntity = getIntent().getParcelableExtra("entity");
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add);
         setSupportActionBar(mBinding.tbAdd);
         mBinding.tbAdd.setNavigationIcon(R.mipmap.toolbar_back_white_36dp);
@@ -58,24 +58,24 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
                 if (mEntity != null) {
-                    Log.d("warAddActivity", ((WorkAndRestDetailsEntity) mEntity).detailsID.get() + "");
-                    Log.d("warAddActivity", ((WorkAndRestDetailsEntity) mEntity).detailsDescribe.get());
-                    mBinding.tvAddTime.setText(((WorkAndRestDetailsEntity) mEntity).detailsTime.get());
-                    if (((WorkAndRestDetailsEntity) mEntity).detailsIsUsing.get()) {
+                    Log.d("warAddActivity", ((WorkAndRestDetails) mEntity).getDetailsID() + "");
+                    Log.d("warAddActivity", ((WorkAndRestDetails) mEntity).getDetailsDescribe());
+                    mBinding.tvAddTime.setText(((WorkAndRestDetails) mEntity).getDetailsTime());
+                    if (((WorkAndRestDetails) mEntity).getDetailsIsUsing()) {
                         mBinding.ivAddIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
                     } else {
                         mBinding.ivAddIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
                     }
-                    mBinding.etAddDescribe.setText(((WorkAndRestDetailsEntity) mEntity).detailsDescribe.get());
+                    mBinding.etAddDescribe.setText(((WorkAndRestDetails) mEntity).getDetailsDescribe());
                 }
             case ADD_WORK_AND_REST:
-                int templateID = getIntent().getIntExtra("templateID", 0);
+                long templateID = getIntent().getLongExtra("templateID", 0);
                 mBinding.tbAdd.setTitle(R.string.title_activity_work_and_rest);
                 mBinding.tvAddDate.setVisibility(View.GONE);
                 if (mEntity == null) {
-                    mEntity = new WorkAndRestDetailsEntity();
-                    ((WorkAndRestDetailsEntity) mEntity).templateID.set(templateID);
-                    ((WorkAndRestDetailsEntity) mEntity).detailsType.set(WorkAndRestDetailsEntity.DETAILS_TYPE_WAR);
+                    mEntity = new WorkAndRestDetails();
+                    ((WorkAndRestDetails) mEntity).setTemplateID(templateID);
+                    ((WorkAndRestDetails) mEntity).setDetailsType(WorkAndRestDetails.DETAILS_TYPE_WAR);
                     int curTime = cal.get(Calendar.HOUR_OF_DAY);
                     int curMin = cal.get(Calendar.MINUTE);
                     String time = (curTime < 10 ? "0" + curTime : curTime) + ":" + (curMin < 10 ? "0" + curMin : curMin);
@@ -127,11 +127,11 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
                 setEntity();
-                WorkAndRestDetailsBLL.editDetail((WorkAndRestDetailsEntity) mEntity);
+                WorkAndRestDetailsBLL.editDetail((WorkAndRestDetails) mEntity);
                 break;
             case ADD_WORK_AND_REST:
                 setEntity();
-                WorkAndRestDetailsBLL.addDetail((WorkAndRestDetailsEntity) mEntity);
+                WorkAndRestDetailsBLL.addDetail((WorkAndRestDetails) mEntity);
                 break;
             case ADD_WEEK_PLAN:
                 break;
@@ -148,9 +148,9 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
         switch (mLabel) {
             case EDIT_WORK_AND_REST:
             case ADD_WORK_AND_REST:
-                ((WorkAndRestDetailsEntity) mEntity).detailsDate.set("");
-                ((WorkAndRestDetailsEntity) mEntity).detailsTime.set(mBinding.tvAddTime.getText().toString());
-                ((WorkAndRestDetailsEntity) mEntity).detailsDescribe.set(mBinding.etAddDescribe.getText().toString());
+                ((WorkAndRestDetails) mEntity).setDetailsDate("");
+                ((WorkAndRestDetails) mEntity).setDetailsTime(mBinding.tvAddTime.getText().toString());
+                ((WorkAndRestDetails) mEntity).setDetailsDescribe(mBinding.etAddDescribe.getText().toString());
                 break;
             case ADD_WEEK_PLAN:
                 break;
@@ -336,12 +336,12 @@ public class AddActivity extends BaseActivity implements SwipeBackLayout.OnSildi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_add_isusing:
-                if (mEntity instanceof WorkAndRestDetailsEntity) {
-                    if (((WorkAndRestDetailsEntity) mEntity).detailsIsUsing.get()) {
-                        ((WorkAndRestDetailsEntity) mEntity).detailsIsUsing.set(false);
+                if (mEntity instanceof WorkAndRestDetails) {
+                    if (((WorkAndRestDetails) mEntity).getDetailsIsUsing()) {
+                        ((WorkAndRestDetails) mEntity).setDetailsIsUsing(false);
                         mBinding.ivAddIsusing.setColorFilter(android.R.color.black, PorterDuff.Mode.DST_ATOP);
                     } else {
-                        ((WorkAndRestDetailsEntity) mEntity).detailsIsUsing.set(true);
+                        ((WorkAndRestDetails) mEntity).setDetailsIsUsing(true);
                         mBinding.ivAddIsusing.setColorFilter(R.color.primary, PorterDuff.Mode.DST_ATOP);
                     }
                 }

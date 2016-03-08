@@ -17,7 +17,6 @@ public class WeekPlanFragment extends BaseFragment {
 
     @Override
     public void initData(Bundle savedInstanceState) {
-
     }
     @Override
     public void onClick(View v) {

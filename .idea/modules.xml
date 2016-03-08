@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/datapicker/datapicker.iml" filepath="$PROJECT_DIR$/datapicker/datapicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/uclock.iml" filepath="$PROJECT_DIR$/uclock.iml" />
+      <module fileurl="file://$PROJECT_DIR$/uclockdaogenerator/uclockdaogenerator.iml" filepath="$PROJECT_DIR$/uclockdaogenerator/uclockdaogenerator.iml" />
     </modules>
   </component>
 </project>
